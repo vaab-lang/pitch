@@ -28,7 +28,7 @@ cargo run --bin vaab -- serve /path/to/vaab-site/main.vaab
 | `main.vaab` | Unified server — static files + health check |
 | `web/` | React + Vite landing page with CodeMirror playground |
 
-Static files are served through the **[tape](https://github.com/vaab-lang/vaab-riffs/tree/main/tape)** riff (`riff install tape`).
+Static files are served through the **[tape](https://github.com/vaab-lang/tape)** riff (`riff install tape`).
 
 ## Architecture
 
@@ -42,7 +42,7 @@ Browser
 
 ## tape riff
 
-**tape** is the official static-file riff (formerly the local express/deck helper). It lives in [vaab-riffs](https://github.com/vaab-lang/vaab-riffs):
+**tape** is the official static-file riff (formerly the local express/deck helper). It lives in its own repo: [vaab-lang/tape](https://github.com/vaab-lang/tape).
 
 - `tape.for_path(root, requested)` — resolve a safe path under a static root
 - `tape.resolve(root, requested)` — same, with `StaticError` for route matching
@@ -60,7 +60,7 @@ riff install tape
 vaab serve main.vaab
 ```
 
-For local riff work, install from a checkout: `riff install tape` after copying into `~/.vaab/riffs`, or use `need tape from "../vaab-riffs/tape"` temporarily.
+For local riff work, use a path dep: `need tape from "../tape"`, or copy into `~/.vaab/riffs` after `riff install tape`.
 
 ## License
 
