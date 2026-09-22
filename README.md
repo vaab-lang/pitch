@@ -52,6 +52,16 @@ Browser
 need tape
 ```
 
+## Benchmarks
+
+Reproduce the performance numbers on the landing page:
+
+```sh
+./benchmarks/run.sh
+```
+
+Uses `db.from` / `store.from` query chains in the Vaab workloads and TypeScript on Node 22 (`--experimental-strip-types`). Set `VAAB=/path/to/vaab` and `RUNS=5` to override defaults.
+
 ## Development
 
 ```sh

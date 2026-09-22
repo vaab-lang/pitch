@@ -12,11 +12,11 @@ const TAKEAWAYS: { icon: LucideIcon; text: string; highlight?: boolean }[] = [
   {
     icon: TrendingUp,
     highlight: true,
-    text: 'Vaab leads on JSON, SQLite, outbound HTTP, and session storage in these runs.',
+    text: 'Vaab leads on JSON, database queries, outbound HTTP, and cache store sessions in these runs.',
   },
   {
     icon: GitCompare,
-    text: 'Handler pipelines match Node. Both spend most of their time on storage I/O.',
+    text: 'Handler pipelines stay close. Both spend most of their time on storage I/O.',
   },
   {
     icon: Layers,
@@ -97,9 +97,9 @@ export function Performance() {
             <span className="text-gradient">Fast enough</span> for real backends.
           </h2>
           <p className="mt-6 text-lg font-medium text-slate-400">
-            Five workloads you actually run in production — JSON responses, session
-            storage, SQLite, outbound HTTP, and full handler pipelines. Same tasks,
-            Vaab vs Node, measured locally.
+            Five workloads you actually run in production — JSON responses, cache
+            store sessions, database queries, outbound HTTP, and full handler pipelines.
+            Same tasks, Vaab vs TypeScript on Node, measured locally.
           </p>
         </div>
 
@@ -131,12 +131,12 @@ export function Performance() {
                 </div>
                 <div>
                   <p className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Node.js equivalent
+                    TypeScript equivalent
                   </p>
                   <VaabCode
                     code={benchmark.nodeCode}
                     filename={benchmark.nodeFilename}
-                    language="javascript"
+                    language="typescript"
                     minHeight="320px"
                   />
                 </div>

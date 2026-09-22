@@ -29,7 +29,7 @@ export const BACKEND_BENCHMARKS: BackendBenchmark[] = [
     workload: '1,000 × serialize User → JSON',
     unit: 'ms',
     vaabFilename: 'users.vaab',
-    nodeFilename: 'users.js',
+    nodeFilename: 'users.ts',
     vaabCode: `type User can Json {
     id: Int
     name: Text
@@ -50,8 +50,8 @@ to users_json() returns list of Text {
     }
     return out
 }`,
-    nodeCode: `function usersJson() {
-  const out = [];
+    nodeCode: `function usersJson(): string[] {
+  const out: string[] = [];
   for (let i = 0; i < 1000; i++) {
     out.push(JSON.stringify({
       id: i,
@@ -62,39 +62,38 @@ to users_json() returns list of Text {
   return out;
 }`,
     rows: [
-      { language: 'Vaab', ms: 6.7, color: '#10b981' },
-      { language: 'Node.js', ms: 58.1, color: '#84cc16' },
+      { language: 'Vaab', ms: 8.7, color: '#10b981' },
+      { language: 'Node.js', ms: 109.4, color: '#84cc16' },
     ],
   },
   {
     id: 'kv',
-    tab: 'KV store',
-    title: 'Key-value sessions',
+    tab: 'Cache store',
+    title: 'Cache store sessions',
     description:
-      'Read and write session keys with Vaab\'s built-in `Store` — no Redis install, no extra service.',
-    workload: '200 durable writes + 200 reads',
+      'Insert and look up session keys through `store.from` — the same fluent query chain as the database.',
+    workload: '200 inserts + 200 keyed lookups',
     unit: 'ms',
     vaabFilename: 'sessions.vaab',
-    nodeFilename: 'sessions.js',
-    vaabCode: `choice StoreError {
-    Failed(message: Text)
-}
-
-to remember(store: Store, key: Text, value: Text) {
-    match store.set(key, value) {
-        when success _ then { return }
-        when failure error then match error {
-            when Failed(message) then {
-                print("set failed: {message}")
-            }
-        }
-    }
+    nodeFilename: 'sessions.ts',
+    vaabCode: `to remember(store: Store, key: Text, value: Text) {
+    store.from("session:").insert({
+        "key": key,
+        "value": value,
+    })
 }
 
 to lookup(store: Store, key: Text) returns Text {
-    match store.get(key) {
-        when found value then { return value }
-        when nothing     then { return "absent" }
+    match store.from("session:").where_eq("key", key).first() {
+        when success found_row then {
+            match found_row {
+                when found row then {
+                    return row.get("value") otherwise "absent"
+                }
+                when nothing then { return "absent" }
+            }
+        }
+        when failure _ then { return "absent" }
     }
 }`,
     nodeCode: `import { DatabaseSync } from "node:sqlite";
@@ -114,59 +113,68 @@ const get = db.prepare(
   "SELECT v FROM kv WHERE k = ?",
 );
 
-export function remember(key, value) {
+export function remember(key: string, value: string): void {
   set.run(key, value);
 }
 
-export function lookup(key) {
+export function lookup(key: string): string {
   return get.get(key)?.v ?? "absent";
 }`,
     rows: [
-      { language: 'Vaab', ms: 47.5, color: '#10b981' },
-      { language: 'Node.js', ms: 134.9, color: '#84cc16' },
+      { language: 'Vaab', ms: 106.3, color: '#10b981' },
+      { language: 'Node.js', ms: 207.3, color: '#84cc16' },
     ],
   },
   {
     id: 'sql',
-    tab: 'SQLite',
-    title: 'SQLite lookups',
+    tab: 'Database',
+    title: 'Database lookups',
     description:
-      "Insert and query rows through Vaab's first-class `Db` builtin — the same SQLite you'd use in a small backend.",
-    workload: '100 upserts + 100 indexed SELECTs',
+      'Insert and fetch rows with `db.from` — filters compile to parameterized SQL through sea-query.',
+    workload: '100 inserts + 100 indexed lookups',
     unit: 'ms',
     vaabFilename: 'users.vaab',
-    nodeFilename: 'users.js',
-    vaabCode: `choice DbError {
-    Failed(message: Text)
-}
-
-to find_user(db: Db, id: Text)
+    nodeFilename: 'users.ts',
+    vaabCode: `to find_user(db: Db, id: Text)
         returns map of Text to Text or fails DbError {
-    match db.query(
-        "SELECT email FROM users WHERE id = ?",
-        [id],
-    ) {
-        when success rows then { return success rows[0] }
+    match db.from("users").where_eq("id", id).first() {
+        when success found_row then {
+            match found_row {
+                when found row then { return success row }
+                when nothing then {
+                    return failure DbError.Failed("missing user")
+                }
+            }
+        }
         when failure error then match error {
             when Failed(message) then {
                 return failure DbError.Failed(message)
             }
         }
     }
-}`,
+}
+
+try db.from("users").insert({
+    "id": id,
+    "email": "user@example.com",
+})`,
     nodeCode: `import { DatabaseSync } from "node:sqlite";
+
+interface UserRow {
+  email: string;
+}
 
 const db = new DatabaseSync("app.db");
 const select = db.prepare(
   "SELECT email FROM users WHERE id = ?",
 );
 
-export function findUser(id) {
-  return select.get(String(id));
+export function findUser(id: string): UserRow | undefined {
+  return select.get(String(id)) as UserRow | undefined;
 }`,
     rows: [
-      { language: 'Vaab', ms: 27.2, color: '#10b981' },
-      { language: 'Node.js', ms: 63.1, color: '#84cc16' },
+      { language: 'Vaab', ms: 63.9, color: '#10b981' },
+      { language: 'Node.js', ms: 161.0, color: '#84cc16' },
     ],
   },
   {
@@ -178,12 +186,8 @@ export function findUser(id) {
     workload: '50 sequential GET requests',
     unit: 'ms',
     vaabFilename: 'notify.vaab',
-    nodeFilename: 'notify.js',
-    vaabCode: `choice HttpError {
-    Failed(message: Text)
-}
-
-to ping_service(url: Text) returns Text or fails HttpError {
+    nodeFilename: 'notify.ts',
+    vaabCode: `to ping_service(url: Text) returns Text or fails HttpError {
     match http.get(url) {
         when success body then { return success body }
         when failure error then match error {
@@ -193,7 +197,7 @@ to ping_service(url: Text) returns Text or fails HttpError {
         }
     }
 }`,
-    nodeCode: `export async function pingService(url) {
+    nodeCode: `export async function pingService(url: string): Promise<string> {
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(\`HTTP \${response.status}\`);
@@ -201,8 +205,8 @@ to ping_service(url: Text) returns Text or fails HttpError {
   return response.text();
 }`,
     rows: [
-      { language: 'Vaab', ms: 12.8, color: '#10b981' },
-      { language: 'Node.js', ms: 91.4, color: '#84cc16' },
+      { language: 'Vaab', ms: 24.2, color: '#10b981' },
+      { language: 'Node.js', ms: 203.2, color: '#84cc16' },
     ],
   },
   {
@@ -214,7 +218,7 @@ to ping_service(url: Text) returns Text or fails HttpError {
     workload: '200 handler calls · 20 unique users',
     unit: 'ms',
     vaabFilename: 'handler.vaab',
-    nodeFilename: 'handler.js',
+    nodeFilename: 'handler.ts',
     vaabCode: `type Session can Json {
     user: Text
     role: Text
@@ -231,10 +235,20 @@ to session_json(store: Store, user: Text) returns Text {
         }
     }
 }`,
-    nodeCode: `export function sessionJson(db, user) {
+    nodeCode: `import { DatabaseSync } from "node:sqlite";
+
+interface SessionJson {
+  user: string;
+  role: string;
+}
+
+export function sessionJson(
+  db: DatabaseSync,
+  user: string,
+): string {
   const row = db.prepare(
     "SELECT role FROM sessions WHERE user = ?",
-  ).get(user);
+  ).get(user) as { role: string } | undefined;
 
   const role = row?.role ?? "member";
   if (!row) {
@@ -243,14 +257,15 @@ to session_json(store: Store, user: Text) returns Text {
     ).run(user, role);
   }
 
-  return JSON.stringify({ user, role });
+  const session: SessionJson = { user, role };
+  return JSON.stringify(session);
 }`,
     rows: [
-      { language: 'Vaab', ms: 40.1, color: '#10b981' },
-      { language: 'Node.js', ms: 40.1, color: '#84cc16' },
+      { language: 'Vaab', ms: 66.7, color: '#10b981' },
+      { language: 'Node.js', ms: 116.3, color: '#84cc16' },
     ],
   },
 ]
 
 export const BENCHMARK_FOOTNOTE =
-  'Measured locally · 5-run average · vaab 0.1 release vs Node 22 · Sep 2026. Node KV/handler use node:sqlite; Vaab uses built-in Store and Db. Store keeps hot keys in memory and batches durable writes (32 keys per commit).'
+  'Measured locally · 5-run average · vaab 0.1 release vs Node 22 (TypeScript) · Sep 2026. Node cache/handler benchmarks use node:sqlite; Vaab uses built-in Store and Db with fluent query chains. Store keeps hot keys in memory and batches durable writes (32 keys per commit).'

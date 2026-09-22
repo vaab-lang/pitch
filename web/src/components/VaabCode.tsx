@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 type VaabCodeProps = {
   code: string
   filename?: string
-  language?: 'vaab' | 'javascript'
+  language?: 'vaab' | 'typescript'
   className?: string
   minHeight?: string
 }
@@ -27,7 +27,7 @@ export function VaabCode({
   minHeight = '200px',
 }: VaabCodeProps) {
   const langExtension =
-    language === 'javascript' ? javascript() : vaabLanguageSupport
+    language === 'typescript' ? javascript({ typescript: true }) : vaabLanguageSupport
 
   return (
     <div

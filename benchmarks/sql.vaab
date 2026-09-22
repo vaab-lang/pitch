@@ -1,19 +1,38 @@
 choice DbError { Failed(message: Text) }
+
 to bench() {
-    match Db.connect("sqlite:/var/folders/_k/vl10h9fn0ygcfzsv9cffksnr0000gn/T/tmpcvoddew0/app.db") {
+    match Db.connect("sqlite:benchmarks/.data/app.db") {
         when success db then {
             let empty: list of Text = []
-            match db.execute("CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL)", empty) { when success _ then {} when failure _ then { return } }
+            match db.execute(
+                "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL)",
+                empty,
+            ) {
+                when success _ then {}
+                when failure _ then { return }
+            }
             let changing i = 0
             while i < 100 {
-                match db.execute("INSERT OR REPLACE INTO users (id, email) VALUES (?, ?)", ["{i}", "user@example.com"]) { when success _ then { i = i + 1 } when failure _ then { return } }
+                match db.from("users").insert({"id": "{i}", "email": "user@example.com"}) {
+                    when success _ then { i = i + 1 }
+                    when failure _ then { return }
+                }
             }
             let changing q = 0
             while q < 100 {
-                match db.query("SELECT email FROM users WHERE id = ?", ["{q}"]) { when success _ then { q = q + 1 } when failure _ then { return } }
+                match db.from("users").where_eq("id", "{q}").first() {
+                    when success found_row then {
+                        match found_row {
+                            when found _ then { q = q + 1 }
+                            when nothing then { q = q + 1 }
+                        }
+                    }
+                    when failure _ then { return }
+                }
             }
         }
         when failure _ then { return }
     }
 }
+
 bench()

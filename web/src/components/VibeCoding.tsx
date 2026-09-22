@@ -4,9 +4,9 @@ import { Reveal } from '@/components/Reveal'
 import { VaabCode } from '@/components/VaabCode'
 import { Badge } from '@/components/ui/badge'
 
-const JS_EXAMPLE = `const activeUsers = users
-  .filter((u) => u.active)
-  .map((u) => ({
+const TS_EXAMPLE = `const activeUsers = users
+  .filter((u: User) => u.active)
+  .map((u: User) => ({
     name: u.name,
     balance: u.balance ?? 0,
   }));
@@ -55,7 +55,7 @@ export function VibeCoding() {
               <p className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-widest text-slate-500">
                 Typical backend code
               </p>
-              <VaabCode code={JS_EXAMPLE} filename="accounts.js" language="javascript" minHeight="260px" />
+              <VaabCode code={TS_EXAMPLE} filename="accounts.ts" language="typescript" minHeight="260px" />
             </div>
           </Reveal>
           <Reveal delay={160}>

@@ -17,3 +17,4 @@ web/.vite/
 
 # Riffs — run `riff install tape && vaab gather` locally
 needed.lock
+benchmarks/.data/
