@@ -37,14 +37,10 @@ export const BACKEND_BENCHMARKS: BackendBenchmark[] = [
 }
 
 to users_json() returns list of Text {
-    let changing i = 0
     let changing out: list of Text = []
+    let changing i = 0
     while i < 1000 {
-        let user = User.new(
-            id: i,
-            name: "user",
-            active: yes,
-        )
+        let user = User.new(id: i, name: "user", active: yes)
         out = out + [to_json(user)]
         i = i + 1
     }
@@ -76,24 +72,24 @@ to users_json() returns list of Text {
     unit: 'ms',
     vaabFilename: 'sessions.vaab',
     nodeFilename: 'sessions.ts',
-    vaabCode: `to remember(store: Store, key: Text, value: Text) {
-    store.from("session:").insert({
+    vaabCode: `choice StoreError { Failed(message: Text) }
+
+to remember(store: Store, key: Text, value: Text) returns Int or fails StoreError {
+    let count = try store.from("session:").insert({
         "key": key,
         "value": value,
     })
+    return success count
 }
 
-to lookup(store: Store, key: Text) returns Text {
-    match store.from("session:").where_eq("key", key).first() {
-        when success found_row then {
-            match found_row {
-                when found row then {
-                    return row.get("value") otherwise "absent"
-                }
-                when nothing then { return "absent" }
-            }
+to lookup(store: Store, key: Text) returns Text or fails StoreError {
+    let row = try store.from("session:").where_eq("key", key).first()
+    match row {
+        when found session then {
+            let value = session.get("value") otherwise "absent"
+            return success value
         }
-        when failure _ then { return "absent" }
+        when nothing then { return success "absent" }
     }
 }`,
     nodeCode: `import { DatabaseSync } from "node:sqlite";
@@ -135,29 +131,25 @@ export function lookup(key: string): string {
     unit: 'ms',
     vaabFilename: 'users.vaab',
     nodeFilename: 'users.ts',
-    vaabCode: `to find_user(db: Db, id: Text)
-        returns map of Text to Text or fails DbError {
-    match db.from("users").where_eq("id", id).first() {
-        when success found_row then {
-            match found_row {
-                when found row then { return success row }
-                when nothing then {
-                    return failure DbError.Failed("missing user")
-                }
-            }
-        }
-        when failure error then match error {
-            when Failed(message) then {
-                return failure DbError.Failed(message)
-            }
-        }
-    }
+    vaabCode: `choice DbError { Failed(message: Text) }
+
+to create_user(db: Db, id: Text, email: Text) returns Int or fails DbError {
+    let count = try db.from("users").insert({
+        "id": id,
+        "email": email,
+    })
+    return success count
 }
 
-try db.from("users").insert({
-    "id": id,
-    "email": "user@example.com",
-})`,
+to find_user(db: Db, id: Text) returns map of Text to Text or fails DbError {
+    let row = try db.from("users").where_eq("id", id).first()
+    match row {
+        when found user then { return success user }
+        when nothing then {
+            return failure DbError.Failed("missing user")
+        }
+    }
+}`,
     nodeCode: `import { DatabaseSync } from "node:sqlite";
 
 interface UserRow {
@@ -187,15 +179,11 @@ export function findUser(id: string): UserRow | undefined {
     unit: 'ms',
     vaabFilename: 'notify.vaab',
     nodeFilename: 'notify.ts',
-    vaabCode: `to ping_service(url: Text) returns Text or fails HttpError {
-    match http.get(url) {
-        when success body then { return success body }
-        when failure error then match error {
-            when Failed(message) then {
-                return failure HttpError.Failed(message)
-            }
-        }
-    }
+    vaabCode: `choice HttpError { Failed(message: Text) }
+
+to ping_service(url: Text) returns Text or fails HttpError {
+    let body = try http.get(url)
+    return success body
 }`,
     nodeCode: `export async function pingService(url: string): Promise<string> {
   const response = await fetch(url);
@@ -219,19 +207,21 @@ export function findUser(id: string): UserRow | undefined {
     unit: 'ms',
     vaabFilename: 'handler.vaab',
     nodeFilename: 'handler.ts',
-    vaabCode: `type Session can Json {
+    vaabCode: `choice StoreError { Failed(message: Text) }
+
+type Session can Json {
     user: Text
     role: Text
 }
 
-to session_json(store: Store, user: Text) returns Text {
+to session_json(store: Store, user: Text) returns Text or fails StoreError {
     match store.get("session:{user}") {
         when found role then {
-            return to_json(Session.new(user: user, role: role))
+            return success to_json(Session.new(user: user, role: role))
         }
         when nothing then {
-            store.set("session:{user}", "member")
-            return to_json(Session.new(user: user, role: "member"))
+            try store.set("session:{user}", "member")
+            return success to_json(Session.new(user: user, role: "member"))
         }
     }
 }`,
