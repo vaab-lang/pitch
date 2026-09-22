@@ -20,13 +20,13 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Prebuilt Vaab CLI (linux x86_64). Override with --build-arg VAAB_VERSION=...
-ARG VAAB_VERSION=latest
+# Prebuilt Vaab CLI (linux x86_64). Clear/delete need >=0.1.1 (Store.remove deadlock fix).
+ARG VAAB_VERSION=v0.1.1
 RUN curl -fsSL \
       "https://github.com/vaab-lang/vaab/releases/download/${VAAB_VERSION}/vaab-linux-x86_64" \
       -o /usr/local/bin/vaab \
     && chmod +x /usr/local/bin/vaab \
-    && vaab version
+    && vaab version | grep -q 0.1.1
 
 RUN useradd --create-home --shell /bin/bash pitch
 USER pitch
