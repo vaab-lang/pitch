@@ -28,31 +28,16 @@ RUN curl -fsSL \
     && chmod +x /usr/local/bin/vaab \
     && vaab version
 
-# Non-root user; riffs live under $HOME/.vaab
 RUN useradd --create-home --shell /bin/bash pitch
 USER pitch
 WORKDIR /home/pitch/app
 ENV HOME=/home/pitch \
     PORT=8787
 
-# Official tape riff (static file helpers)
-RUN mkdir -p /home/pitch/.vaab/riffs/tape \
-    && curl -fsSL https://raw.githubusercontent.com/vaab-lang/tape/main/riff \
-         -o /home/pitch/.vaab/riffs/tape/riff \
-    && curl -fsSL https://raw.githubusercontent.com/vaab-lang/tape/main/lib.vaab \
-         -o /home/pitch/.vaab/riffs/tape/lib.vaab
-
 COPY --chown=pitch:pitch main.vaab riff ./
 COPY --from=web --chown=pitch:pitch /src/web/dist ./web/dist
 COPY --chown=pitch:pitch docker-entrypoint.sh /home/pitch/docker-entrypoint.sh
-
-# Lockfile points at the installed tape copy (absolute path inside the image).
-RUN printf '%s\n' \
-      '# written for the Docker image — tape is installed under ~/.vaab/riffs' \
-      '' \
-      "path tape /home/pitch/.vaab/riffs/tape" \
-      > /home/pitch/app/needed.lock \
-    && chmod +x /home/pitch/docker-entrypoint.sh
+RUN chmod +x /home/pitch/docker-entrypoint.sh
 
 EXPOSE 8787
 ENTRYPOINT ["/home/pitch/docker-entrypoint.sh"]

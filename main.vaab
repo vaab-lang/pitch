@@ -1,12 +1,10 @@
 # pitch — the Vaab landing page, playground, and static assets in one server.
 #
 #   cd web && npm run build
-#   riff install tape
 #   vaab serve main.vaab
 #
 # POST /api/run is handled natively by vaab-server (embedded VM playground).
-
-need tape
+# Static files are served with `reply file` (Vaab is the HTTP server).
 
 type Health can Json {
     ok: Bool
@@ -18,6 +16,10 @@ serve on port 8787 {
         reply with Health.new(ok: yes, service: "pitch")
     }
 
+    route get "/" {
+        reply file "web/dist/index.html"
+    }
+
     route get "/spec" {
         reply file "web/dist/index.html"
     }
@@ -27,18 +29,10 @@ serve on port 8787 {
     }
 
     route get "/{*filepath}" {
-        match tape.resolve("web/dist", filepath) {
-            when success resolved then {
-                reply file resolved
-            }
-            when failure error then match error {
-                when Unsafe(requested) then {
-                    reply text "forbidden" as "text/plain; charset=utf-8" status 403
-                }
-                when NotFound(requested) then {
-                    reply text "not found" as "text/plain; charset=utf-8" status 404
-                }
-            }
+        if filepath.contains("..") {
+            reply text "forbidden" as "text/plain; charset=utf-8" status 403
+        } else {
+            reply file "web/dist/{filepath}"
         }
     }
 }
