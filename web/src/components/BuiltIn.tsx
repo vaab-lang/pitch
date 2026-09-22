@@ -1,11 +1,20 @@
 import { Database, Filter, Layers, PenLine } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 import { QueryChainIllustration } from '@/components/BuiltInIllustrations'
 import { Reveal } from '@/components/Reveal'
 import { VaabCode } from '@/components/VaabCode'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+
+function VaabToken({ children }: { children: ReactNode }) {
+  return (
+    <code className="rounded border border-slate-800 bg-slate-900 px-1 py-0.5 font-mono text-sm text-emerald-400">
+      {children}
+    </code>
+  )
+}
 
 const DB_QUERY = `let rows = try db
     .from("tasks")
@@ -39,40 +48,66 @@ const NICEITIES: {
   id: string
   icon: LucideIcon
   label: string
-  title: string
-  detail: string
+  title: ReactNode
+  detail: ReactNode
 }[] = [
   {
     id: 'chain',
     icon: Filter,
     label: 'Filters',
     title: 'Chain filters and sort',
-    detail:
-      '`.where_eq`, `.where_like`, `.order_desc`, `.limit`, and `.offset` stack on one relation. Terminals are `.all()`, `.first()`, and `.count()`.',
+    detail: (
+      <>
+        <VaabToken>.where_eq</VaabToken>, <VaabToken>.where_like</VaabToken>,{' '}
+        <VaabToken>.order_desc</VaabToken>, <VaabToken>.limit</VaabToken>, and{' '}
+        <VaabToken>.offset</VaabToken> stack on one relation. Terminals are{' '}
+        <VaabToken>.all()</VaabToken>, <VaabToken>.first()</VaabToken>, and{' '}
+        <VaabToken>.count()</VaabToken>.
+      </>
+    ),
   },
   {
     id: 'backends',
     icon: Layers,
     label: 'Two backends',
-    title: 'Db and Store share one API',
-    detail:
-      'SQL runs through sea-query with bound parameters. The store scans keys under a prefix and promotes JSON object fields onto each row.',
+    title: 'Database and cache store share one API',
+    detail: (
+      <>
+        SQL runs through sea-query with bound parameters. The fast cache store scans
+        keys under a prefix and promotes JSON object fields onto each row.
+      </>
+    ),
   },
   {
     id: 'writes',
     icon: PenLine,
     label: 'Writes',
     title: 'Insert without string SQL',
-    detail:
-      '`.insert`, `.update`, and `.delete` live on the same chain. Raw `db.execute` stays for SQL the fluent surface cannot express yet.',
+    detail: (
+      <>
+        <VaabToken>.insert</VaabToken>, <VaabToken>.update</VaabToken>, and{' '}
+        <VaabToken>.delete</VaabToken> live on the same chain. Raw{' '}
+        <VaabToken>db.execute</VaabToken> stays for SQL the fluent surface cannot
+        express yet.
+      </>
+    ),
   },
   {
     id: 'optional',
     icon: Database,
     label: 'Optionals',
-    title: '`.first()` matches like a choice',
-    detail:
-      'A missing row is `nothing`, not an exception. Use `when found row` and `when nothing` in the same `match` you use everywhere else.',
+    title: (
+      <>
+        <VaabToken>.first()</VaabToken> matches like a choice
+      </>
+    ),
+    detail: (
+      <>
+        A missing row is <VaabToken>nothing</VaabToken>, not an exception. Use{' '}
+        <VaabToken>when found row</VaabToken> and <VaabToken>when nothing</VaabToken>{' '}
+        in the same <VaabToken>match</VaabToken> you use everywhere else.
+      </>
+    ),
   },
 ]
 
@@ -92,31 +127,14 @@ export function BuiltIn() {
               Built in
             </Badge>
             <h2 className="text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-50 sm:text-5xl md:text-6xl lg:text-7xl">
-              Query SQLite and your KV store with the{' '}
+              Query your database and cache store with the{' '}
               <span className="text-gradient">same chain</span>.
             </h2>
             <p className="mt-8 max-w-2xl text-lg leading-relaxed text-slate-400 md:text-xl">
-              Start with{' '}
-              <code className="rounded border border-slate-800 bg-slate-900 px-1 py-0.5 font-mono text-sm text-emerald-400">
-                db.from
-              </code>{' '}
-              or{' '}
-              <code className="rounded border border-slate-800 bg-slate-900 px-1 py-0.5 font-mono text-sm text-emerald-400">
-                store.from
-              </code>
-              . Add filters and sort, then finish with{' '}
-              <code className="rounded border border-slate-800 bg-slate-900 px-1 py-0.5 font-mono text-sm text-emerald-400">
-                .all()
-              </code>
-              ,{' '}
-              <code className="rounded border border-slate-800 bg-slate-900 px-1 py-0.5 font-mono text-sm text-emerald-400">
-                .first()
-              </code>
-              , or{' '}
-              <code className="rounded border border-slate-800 bg-slate-900 px-1 py-0.5 font-mono text-sm text-emerald-400">
-                .insert()
-              </code>
-              . SQL compiles to parameterized queries. The store scans keys under a prefix.
+              Start with <VaabToken>db.from</VaabToken> or <VaabToken>store.from</VaabToken>.
+              Add filters and sort, then finish with <VaabToken>.all()</VaabToken>,{' '}
+              <VaabToken>.first()</VaabToken>, or <VaabToken>.insert()</VaabToken>. SQL
+              compiles to parameterized queries. The cache store scans keys under a prefix.
             </p>
           </div>
         </Reveal>
@@ -130,7 +148,7 @@ export function BuiltIn() {
             <Reveal delay={120}>
               <div>
                 <p className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-widest text-emerald-500/90">
-                  SQLite tasks
+                  Database tasks
                 </p>
                 <VaabCode code={DB_QUERY} filename="tasks.vaab" minHeight="320px" />
               </div>
@@ -138,7 +156,7 @@ export function BuiltIn() {
             <Reveal delay={180}>
               <div>
                 <p className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                  KV sessions
+                  Cache store sessions
                 </p>
                 <VaabCode code={STORE_QUERY} filename="sessions.vaab" minHeight="200px" />
               </div>

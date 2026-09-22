@@ -81,7 +81,7 @@ export function QueryChainIllustration({ className }: IllustrationProps) {
       <g className="readable-fade-up readable-delay-2">
         <rect x="24" y="156" width="130" height="28" rx="8" className="fill-slate-950 stroke-slate-800" strokeWidth="1" />
         <text x="89" y="174" textAnchor="middle" className="fill-slate-500 text-[10px] font-mono">
-          db · store
+          db · cache
         </text>
       </g>
       <g className="readable-fade-up readable-delay-3">
