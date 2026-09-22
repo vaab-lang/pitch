@@ -31,7 +31,7 @@ import { cn } from '@/lib/utils'
 const EXAMPLE_ICONS: Record<string, LucideIcon> = {
   hello: Hand,
   collections: Layers,
-  types: Shapes,
+  casts: Shapes,
   match: Braces,
 }
 

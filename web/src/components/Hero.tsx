@@ -4,12 +4,20 @@ import { VaabCode } from '@/components/VaabCode'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
-const SAMPLE_CODE = `type Account {
-    owner: Text
-    balance: Int = 0
+const SAMPLE_CODE = `cast Account {
+    changing owner: Text
+    changing balance: Int = 0
+
+    to deposit(amount: Int) returns Account or fails AccountError {
+        if amount <= 0 { return failure AccountError.InvalidAmount(amount) }
+        self.balance = self.balance + amount
+        return success self
+    }
 }
 
-match account.deposit(25) {
+choice AccountError { InvalidAmount(amount: Int) }
+
+match Account.new(owner: "Ada").deposit(25) {
     when success a then print("{a.owner} has {a.balance}")
     when failure _   then print("that did not work")
 }`

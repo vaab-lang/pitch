@@ -2,7 +2,7 @@ import { LanguageSupport, StreamLanguage } from '@codemirror/language'
 import { tags as t } from '@lezer/highlight'
 
 const VAAB_KEYWORDS =
-  /\b(let|changing|to|type|choice|match|when|then|return|if|else|or|fails|success|failure|otherwise|print|serve|route|reply|yes|no|nothing|for|each|in|while|import|from|need|riff|together|start|shared|returns|with|new|and|not|file|text|json)\b/
+  /\b(let|changing|to|type|cast|entertains|choice|ability|can|match|when|then|return|if|else|or|fails|success|failure|otherwise|print|serve|route|reply|yes|no|nothing|for|each|in|while|import|from|need|riff|together|start|shared|returns|with|new|and|not|file|text|json|pure|send|receive|select|timeout|after|seconds|expecting|as|try|at|port|get|post|of|size|found|self)\b/
 
 const VAAB_TYPES =
   /\b(Text|Int|Float|Bool|List|Map|Channel|Task|Shared|Json|Http|Sqlite|Env|Nothing|Self|Unit|Result)\b/

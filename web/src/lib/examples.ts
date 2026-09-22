@@ -25,25 +25,23 @@ print(numbers.map(n -> n * n))
 print(ages.get("Ada") otherwise 0)`,
   },
   {
-    id: 'types',
-    label: 'Types',
-    description: 'Records with methods and errors',
-    source: `type Account {
-    owner: Text
-    balance: Int = 0
+    id: 'casts',
+    label: 'Casts',
+    description: 'Mutable objects, inheritance, and errors',
+    source: `cast Animal {
+    changing name: Text
 
-    to deposit(amount: Int) returns Account or fails AccountError {
-        if amount <= 0 { return failure AccountError.InvalidAmount(amount) }
-        return success self.with(balance: self.balance + amount)
-    }
+    to speak() returns Text = self.name
 }
 
-choice AccountError { InvalidAmount(amount: Int) }
+cast Dog entertains Animal {
+    changing breed: Text
 
-match Account.new(owner: "Ada").deposit(25) {
-    when success a then print("{a.owner} has {a.balance}")
-    when failure _   then print("that did not work")
-}`,
+    to speak() returns Text = "{self.name}, a {self.breed}"
+}
+
+let ada = Dog.new(name: "Ada", breed: "collie")
+print(ada.speak())`,
   },
   {
     id: 'match',

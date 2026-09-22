@@ -45,10 +45,12 @@ const FEATURES: {
     detail: 'Fix type errors at compile time, not in production logs.',
     filename: 'deposit.vaab',
     minHeight: '168px',
-    code: `to deposit(amount: Int) returns Account {
-    return self.with(
-        balance: self.balance + amount
-    )
+    code: `cast Account {
+    changing balance: Int = 0
+
+    to deposit(amount: Int) {
+        self.balance = self.balance + amount
+    }
 }
 
 # rejected: amount + "oops"`,
