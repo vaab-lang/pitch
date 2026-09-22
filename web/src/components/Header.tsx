@@ -10,6 +10,7 @@ const NAV = [
   { href: '/#built-in', label: 'Built in', homeOnly: true },
   { href: '/#features', label: 'Features', homeOnly: true },
   { href: '/#performance', label: 'Performance', homeOnly: true },
+  { href: '/tasks', label: 'Todos', homeOnly: false },
   { href: '/spec', label: 'Spec', homeOnly: false },
   { href: '/decisions', label: 'Decisions', homeOnly: false },
   { href: '/#playground', label: 'Try it', homeOnly: true },
@@ -44,7 +45,10 @@ function NavLink({ href, label }: { href: string; label: string }) {
 
 export function Header() {
   const location = useLocation()
-  const onDocPage = location.pathname === '/spec' || location.pathname === '/decisions'
+  const onDocPage =
+    location.pathname === '/spec' ||
+    location.pathname === '/decisions' ||
+    location.pathname === '/tasks'
 
   return (
     <nav className="fixed top-0 z-40 w-full border-b border-slate-800/70 bg-slate-950/90 py-4 backdrop-blur-md md:border-b-0 md:bg-transparent md:py-6">

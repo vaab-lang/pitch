@@ -24,7 +24,7 @@ cargo run --bin vaab -- serve /path/to/vaab-site/main.vaab
 
 | Path | Purpose |
 |------|---------|
-| `main.vaab` | Unified server — static files + health check |
+| `main.vaab` | Unified server — static files, health, KV todos |
 | `web/` | React + Vite landing page with CodeMirror playground |
 
 Static files are served with Vaab’s `reply file` (no reverse proxy).
@@ -34,10 +34,17 @@ Static files are served with Vaab’s `reply file` (no reverse proxy).
 ```
 Browser
    │
-   ├─ GET /*          → reply file web/dist/...
-   ├─ GET /health     → Vaab JSON route
-   └─ POST /api/run   → vaab-server playground (embedded VM)
+   ├─ GET /*                  → reply file web/dist/...
+   ├─ GET /health             → Vaab JSON route
+   ├─ GET|POST /api/todos/…   → Store-backed todos (per visitor cookie)
+   └─ POST /api/run           → vaab-server playground (embedded VM)
 ```
+
+## Todos demo
+
+`/tasks` is a classic todo list served by the same Vaab process. The browser
+sets a `vaab_visitor` cookie (UUID); API calls use that id in the path so each
+visitor’s rows live under `todo:{visitor}:` in `pitch-todos.vaab.kv`.
 
 ## Benchmarks
 
