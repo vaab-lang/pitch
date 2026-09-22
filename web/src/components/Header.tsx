@@ -1,33 +1,70 @@
-import { ExternalLink } from 'lucide-react'
+import { Code2, ExternalLink } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+
+const NAV = [
+  { href: '/#vibe-coding', label: 'Vibe coding', homeOnly: true },
+  { href: '/#features', label: 'Features', homeOnly: true },
+  { href: '/#performance', label: 'Performance', homeOnly: true },
+  { href: '/spec', label: 'Spec', homeOnly: false },
+  { href: '/decisions', label: 'Decisions', homeOnly: false },
+  { href: '/#playground', label: 'Try it', homeOnly: true },
+] as const
+
+function NavLink({ href, label }: { href: string; label: string }) {
+  const location = useLocation()
+  const isRoute = href.startsWith('/') && !href.includes('#')
+  const active = isRoute
+    ? location.pathname === href
+    : location.pathname === '/' && location.hash === href.replace('/', '')
+
+  const className = cn(
+    'transition-colors hover:text-slate-100',
+    active ? 'text-emerald-400' : 'text-slate-400',
+  )
+
+  if (isRoute) {
+    return (
+      <Link to={href} className={className}>
+        {label}
+      </Link>
+    )
+  }
+
+  return (
+    <a href={href} className={className}>
+      {label}
+    </a>
+  )
+}
 
 export function Header() {
+  const location = useLocation()
+  const onDocPage = location.pathname === '/spec' || location.pathname === '/decisions'
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <a href="#" className="flex items-center gap-2.5">
-          <img src="/vaab-mark.svg" alt="" className="h-7 w-7" />
-          <span className="font-serif text-lg tracking-tight">Vaab</span>
-          <Badge variant="secondary" className="hidden sm:inline-flex">
+    <nav className="fixed top-0 z-40 w-full border-b border-slate-800/70 bg-slate-950/90 py-4 backdrop-blur-md md:border-b-0 md:bg-transparent md:py-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
+        <Link to="/" className="flex min-w-0 items-center gap-2.5 font-bold tracking-tight text-slate-100">
+          <div className="shrink-0 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 p-2 text-slate-950 shadow-lg shadow-emerald-500/20">
+            <Code2 size={18} strokeWidth={3} />
+          </div>
+          <span className="truncate text-xl leading-none">Vaab</span>
+          <Badge variant="secondary" className="hidden normal-case sm:inline-flex">
             v0.1
           </Badge>
-        </a>
+        </Link>
 
-        <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-          <a href="#features" className="transition-colors hover:text-foreground">
-            Features
-          </a>
-          <a href="#playground" className="transition-colors hover:text-foreground">
-            Try it
-          </a>
-          <a href="#install" className="transition-colors hover:text-foreground">
-            Install
-          </a>
-        </nav>
+        <div className="hidden items-center gap-6 text-sm font-semibold md:flex lg:gap-8">
+          {NAV.filter((item) => !onDocPage || !item.homeOnly).map((item) => (
+            <NavLink key={item.href} href={item.href} label={item.label} />
+          ))}
+        </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Button variant="ghost" size="sm" asChild>
             <a
               href="https://github.com/vaab-lang/vaab"
@@ -39,10 +76,10 @@ export function Header() {
             </a>
           </Button>
           <Button size="sm" asChild>
-            <a href="#playground">Try Vaab</a>
+            <Link to="/#playground">Try Vaab</Link>
           </Button>
         </div>
       </div>
-    </header>
+    </nav>
   )
 }

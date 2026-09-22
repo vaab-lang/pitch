@@ -18,6 +18,14 @@ serve on port 8787 {
         reply with Health.new(ok: yes, service: "pitch")
     }
 
+    route get "/spec" {
+        reply file "web/dist/index.html"
+    }
+
+    route get "/decisions" {
+        reply file "web/dist/index.html"
+    }
+
     route get "/{*filepath}" {
         if filepath.contains("..") {
             reply text "forbidden" as "text/plain; charset=utf-8" status 403
