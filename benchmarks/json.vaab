@@ -3,7 +3,8 @@ type User can Json {
     name: Text
     active: Bool
 }
-to bench() {
+
+to users_json() {
     let changing i = 0
     while i < 1000 {
         let user = User.new(id: i, name: "user", active: yes)
@@ -11,4 +12,5 @@ to bench() {
         i = i + 1
     }
 }
-bench()
+
+users_json()

@@ -5,39 +5,29 @@ type Session can Json {
     role: Text
 }
 
-to handle(store: Store, user: Text) returns Text or fails StoreError {
-    match store.get("session-{user}") {
+to session_json(store: Store, user: Text) returns Text or fails StoreError {
+    match store.get("session:{user}") {
         when found role then {
-            let session = Session.new(user: user, role: role)
-            return success to_json(session)
+            return success to_json(Session.new(user: user, role: role))
         }
         when nothing then {
-            match store.set("session-{user}", "member") {
-                when success _ then {
-                    let session = Session.new(user: user, role: "member")
-                    return success to_json(session)
-                }
-                when failure error then match error {
-                    when Failed(message) then { return failure StoreError.Failed(message) }
-                }
-            }
+            try store.set("session:{user}", "member")
+            return success to_json(Session.new(user: user, role: "member"))
         }
     }
 }
 
-to bench() {
-    match Store.open("benchmarks/.data/bench.kv") {
-        when success store then {
-            let changing i = 0
-            while i < 200 {
-                match handle(store, "{i % 20}") {
-                    when success _ then { i = i + 1 }
-                    when failure _ then { return }
-                }
-            }
-        }
-        when failure _ then { return }
+to bench() returns Int or fails StoreError {
+    let store = try Store.open("benchmarks/.data/bench.kv")
+    let changing i = 0
+    while i < 200 {
+        try session_json(store, "{i % 20}")
+        i = i + 1
     }
+    return success 0
 }
 
-bench()
+match bench() {
+    when success _ then {}
+    when failure _ then {}
+}

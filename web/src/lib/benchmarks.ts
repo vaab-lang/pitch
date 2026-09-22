@@ -36,15 +36,13 @@ export const BACKEND_BENCHMARKS: BackendBenchmark[] = [
     active: Bool
 }
 
-to users_json() returns list of Text {
-    let changing out: list of Text = []
+to users_json() {
     let changing i = 0
     while i < 1000 {
         let user = User.new(id: i, name: "user", active: yes)
-        out = out + [to_json(user)]
+        let json = to_json(user)
         i = i + 1
     }
-    return out
 }`,
     nodeCode: `function usersJson(): string[] {
   const out: string[] = [];
@@ -58,8 +56,8 @@ to users_json() returns list of Text {
   return out;
 }`,
     rows: [
-      { language: 'Vaab', ms: 8.7, color: '#10b981' },
-      { language: 'Node.js', ms: 109.4, color: '#84cc16' },
+      { language: 'Vaab', ms: 3.9, color: '#10b981' },
+      { language: 'Node.js', ms: 54.9, color: '#84cc16' },
     ],
   },
   {
@@ -117,8 +115,8 @@ export function lookup(key: string): string {
   return get.get(key)?.v ?? "absent";
 }`,
     rows: [
-      { language: 'Vaab', ms: 106.3, color: '#10b981' },
-      { language: 'Node.js', ms: 207.3, color: '#84cc16' },
+      { language: 'Vaab', ms: 88.0, color: '#10b981' },
+      { language: 'Node.js', ms: 116.2, color: '#84cc16' },
     ],
   },
   {
@@ -165,8 +163,8 @@ export function findUser(id: string): UserRow | undefined {
   return select.get(String(id)) as UserRow | undefined;
 }`,
     rows: [
-      { language: 'Vaab', ms: 63.9, color: '#10b981' },
-      { language: 'Node.js', ms: 161.0, color: '#84cc16' },
+      { language: 'Vaab', ms: 36.9, color: '#10b981' },
+      { language: 'Node.js', ms: 91.5, color: '#84cc16' },
     ],
   },
   {
@@ -193,8 +191,8 @@ to ping_service(url: Text) returns Text or fails HttpError {
   return response.text();
 }`,
     rows: [
-      { language: 'Vaab', ms: 24.2, color: '#10b981' },
-      { language: 'Node.js', ms: 203.2, color: '#84cc16' },
+      { language: 'Vaab', ms: 12.0, color: '#10b981' },
+      { language: 'Node.js', ms: 106.3, color: '#84cc16' },
     ],
   },
   {
@@ -251,8 +249,8 @@ export function sessionJson(
   return JSON.stringify(session);
 }`,
     rows: [
-      { language: 'Vaab', ms: 66.7, color: '#10b981' },
-      { language: 'Node.js', ms: 116.3, color: '#84cc16' },
+      { language: 'Vaab', ms: 31.7, color: '#10b981' },
+      { language: 'Node.js', ms: 65.5, color: '#84cc16' },
     ],
   },
 ]

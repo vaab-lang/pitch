@@ -1,38 +1,44 @@
 choice DbError { Failed(message: Text) }
 
-to bench() {
-    match Db.connect("sqlite:benchmarks/.data/app.db") {
-        when success db then {
-            let empty: list of Text = []
-            match db.execute(
-                "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL)",
-                empty,
-            ) {
-                when success _ then {}
-                when failure _ then { return }
-            }
-            let changing i = 0
-            while i < 100 {
-                match db.from("users").insert({"id": "{i}", "email": "user@example.com"}) {
-                    when success _ then { i = i + 1 }
-                    when failure _ then { return }
-                }
-            }
-            let changing q = 0
-            while q < 100 {
-                match db.from("users").where_eq("id", "{q}").first() {
-                    when success found_row then {
-                        match found_row {
-                            when found _ then { q = q + 1 }
-                            when nothing then { q = q + 1 }
-                        }
-                    }
-                    when failure _ then { return }
-                }
-            }
+to create_user(db: Db, id: Text, email: Text) returns Int or fails DbError {
+    let count = try db.from("users").insert({
+        "id": id,
+        "email": email,
+    })
+    return success count
+}
+
+to find_user(db: Db, id: Text) returns map of Text to Text or fails DbError {
+    let row = try db.from("users").where_eq("id", id).first()
+    match row {
+        when found user then { return success user }
+        when nothing then {
+            return failure DbError.Failed("missing user")
         }
-        when failure _ then { return }
     }
 }
 
-bench()
+to bench() returns Int or fails DbError {
+    let db = try Db.connect("sqlite:benchmarks/.data/app.db")
+    let empty: list of Text = []
+    try db.execute(
+        "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL)",
+        empty,
+    )
+    let changing i = 0
+    while i < 100 {
+        try create_user(db, "{i}", "user@example.com")
+        i = i + 1
+    }
+    let changing q = 0
+    while q < 100 {
+        try find_user(db, "{q}")
+        q = q + 1
+    }
+    return success 0
+}
+
+match bench() {
+    when success _ then {}
+    when failure _ then {}
+}

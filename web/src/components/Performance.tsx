@@ -16,7 +16,7 @@ const TAKEAWAYS: { icon: LucideIcon; text: string; highlight?: boolean }[] = [
   },
   {
     icon: GitCompare,
-    text: 'Handler pipelines stay close. Both spend most of their time on storage I/O.',
+    text: 'Handler pipelines favor Vaab here too. Both spend most of their time on storage I/O.',
   },
   {
     icon: Layers,

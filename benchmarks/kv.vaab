@@ -1,33 +1,40 @@
 choice StoreError { Failed(message: Text) }
 
-to bench() {
-    match Store.open("benchmarks/.data/bench.kv") {
-        when success store then {
-            let changing i = 0
-            while i < 200 {
-                match store.from("session:").insert({
-                    "key": "session:{i}",
-                    "value": "signed-in",
-                }) {
-                    when success _ then { i = i + 1 }
-                    when failure _ then { return }
-                }
-            }
-            let changing j = 0
-            while j < 200 {
-                match store.from("session:").where_eq("key", "session:{j}").first() {
-                    when success found_row then {
-                        match found_row {
-                            when found _ then { j = j + 1 }
-                            when nothing then { j = j + 1 }
-                        }
-                    }
-                    when failure _ then { return }
-                }
-            }
+to remember(store: Store, key: Text, value: Text) returns Int or fails StoreError {
+    let count = try store.from("session:").insert({
+        "key": key,
+        "value": value,
+    })
+    return success count
+}
+
+to lookup(store: Store, key: Text) returns Text or fails StoreError {
+    let row = try store.from("session:").where_eq("key", key).first()
+    match row {
+        when found session then {
+            let value = session.get("value") otherwise "absent"
+            return success value
         }
-        when failure _ then { return }
+        when nothing then { return success "absent" }
     }
 }
 
-bench()
+to bench() returns Int or fails StoreError {
+    let store = try Store.open("benchmarks/.data/bench.kv")
+    let changing i = 0
+    while i < 200 {
+        try remember(store, "session:{i}", "signed-in")
+        i = i + 1
+    }
+    let changing j = 0
+    while j < 200 {
+        try lookup(store, "session:{j}")
+        j = j + 1
+    }
+    return success 0
+}
+
+match bench() {
+    when success _ then {}
+    when failure _ then {}
+}

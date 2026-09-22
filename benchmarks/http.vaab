@@ -1,11 +1,20 @@
 choice HttpError { Failed(message: Text) }
-to bench() {
+
+to ping_service(url: Text) returns Text or fails HttpError {
+    let body = try http.get(url)
+    return success body
+}
+
+to bench() returns Int or fails HttpError {
     let changing i = 0
     while i < 50 {
-        match http.get("http://127.0.0.1:9998/health") {
-            when success _ then { i = i + 1 }
-            when failure _ then { return }
-        }
+        try ping_service("http://127.0.0.1:9998/health")
+        i = i + 1
     }
+    return success 0
 }
-bench()
+
+match bench() {
+    when success _ then {}
+    when failure _ then {}
+}
