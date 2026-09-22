@@ -1,8 +1,8 @@
 {
-  "name": "vaab-site",
+  "name": "pitch",
   "private": true,
   "version": "0.1.0",
-  "description": "Vaab language landing page and browser playground",
+  "description": "The Vaab pitch — landing page and browser playground",
   "scripts": {
     "build:web": "npm run build --prefix web",
     "serve": "npm run build:web && vaab serve main.vaab",

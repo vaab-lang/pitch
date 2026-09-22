@@ -1,5 +1,0 @@
-riff express 0.1.0
-description Sinatra-style static file helpers for Vaab HTTP servers
-by vaab-lang
-licence MIT
-needs vaab at 0.1

@@ -1,12 +1,12 @@
-# Vaab site — landing page, playground, and static assets in one server.
+# pitch — the Vaab landing page, playground, and static assets in one server.
 #
 #   cd web && npm run build
 #   vaab serve main.vaab
 #
 # POST /api/run is handled natively by vaab-server (embedded VM playground).
-# Static file path logic mirrors express.for_path from the express riff.
+# Static paths follow the same rules as deck.for_path.
 
-need express from ./riffs/express
+need deck from ./riffs/deck
 
 type Health can Json {
     ok: Bool
@@ -15,7 +15,7 @@ type Health can Json {
 
 serve on port 8787 {
     route get "/health" {
-        reply with Health.new(ok: yes, service: "vaab-site")
+        reply with Health.new(ok: yes, service: "pitch")
     }
 
     route get "/{*filepath}" {
