@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-background: oklch(0.16 0.012 165);
+  --color-foreground: oklch(0.94 0.012 165);
+  --color-card: oklch(0.19 0.014 165);
+  --color-card-foreground: oklch(0.94 0.012 165);
+  --color-primary: oklch(0.78 0.14 175);
+  --color-primary-foreground: oklch(0.16 0.02 175);
+  --color-secondary: oklch(0.24 0.018 165);
+  --color-secondary-foreground: oklch(0.88 0.02 165);
+  --color-muted: oklch(0.22 0.014 165);
+  --color-muted-foreground: oklch(0.68 0.02 165);
+  --color-accent: oklch(0.82 0.16 85);
+  --color-accent-foreground: oklch(0.18 0.03 85);
+  --color-destructive: oklch(0.62 0.2 25);
+  --color-border: oklch(0.28 0.02 165);
+  --color-input: oklch(0.24 0.018 165);
+  --color-ring: oklch(0.78 0.14 175);
+
+  --radius: 0.5rem;
+  --radius-sm: calc(var(--radius) * 0.75);
+  --radius-lg: calc(var(--radius) * 1.25);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    background-image:
+      linear-gradient(oklch(0.28 0.02 165 / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.28 0.02 165 / 0.35) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+  }
+
+  ::selection {
+    background: oklch(0.78 0.14 175 / 0.35);
+    color: oklch(0.98 0.01 175);
+  }
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  .blueprint-corner {
+    position: relative;
+  }
+
+  .blueprint-corner::before,
+  .blueprint-corner::after {
+    content: "";
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-color: oklch(0.78 0.14 175 / 0.5);
+    pointer-events: none;
+  }
+
+  .blueprint-corner::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
+
+  .blueprint-corner::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+  }
+
+  .text-gradient {
+    background: linear-gradient(
+      135deg,
+      oklch(0.88 0.12 175) 0%,
+      oklch(0.82 0.16 85) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero-glow {
+    background: radial-gradient(
+      ellipse 60% 50% at 50% -10%,
+      oklch(0.78 0.14 175 / 0.18),
+      transparent 70%
+    );
+  }
+}

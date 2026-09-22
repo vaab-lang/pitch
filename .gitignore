@@ -1,0 +1,16 @@
+# Rust
+runner/target/
+**/*.rs.bk
+
+# Node
+web/node_modules/
+web/dist/
+web/.vite/
+
+# OS
+.DS_Store
+*.log
+
+# Env
+.env
+.env.local
