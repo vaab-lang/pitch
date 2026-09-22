@@ -25,7 +25,7 @@ cargo run --bin vaab -- serve /path/to/vaab-site/main.vaab
 | Path | Purpose |
 |------|---------|
 | `main.vaab` | Unified server — static files + health check |
-| `riffs/deck/` | Static file riff: `for_path`, `mime_for` |
+| `riffs/tape/` | Static file riff: `for_path`, `mime_for` |
 | `web/` | React + Vite landing page with CodeMirror playground |
 
 ## Architecture
@@ -33,20 +33,20 @@ cargo run --bin vaab -- serve /path/to/vaab-site/main.vaab
 ```
 Browser
    │
-   ├─ GET /*          → reply file (served from the deck)
+   ├─ GET /*          → reply file (served from tape)
    ├─ GET /health     → Vaab JSON route
    └─ POST /api/run   → vaab-server playground (embedded VM)
 ```
 
-## deck riff
+## tape riff
 
-**deck** is a Vaab riff for serving static files — paths and mime types, plain English:
+**tape** is a Vaab riff for serving static files — paths and mime types, plain English:
 
-- `deck.for_path(root, requested)` — resolve a safe path under a static root
-- `deck.mime_for(path)` — guess a content type from a file extension
+- `tape.for_path(root, requested)` — resolve a safe path under a static root
+- `tape.mime_for(path)` — guess a content type from a file extension
 
 ```
-need deck from ./riffs/deck
+need tape from ./riffs/tape
 ```
 
 ## Development

@@ -4,9 +4,9 @@
 #   vaab serve main.vaab
 #
 # POST /api/run is handled natively by vaab-server (embedded VM playground).
-# Static paths follow the same rules as deck.for_path.
+# Static paths follow the same rules as tape.for_path.
 
-need deck from ./riffs/deck
+need tape from ./riffs/tape
 
 type Health can Json {
     ok: Bool

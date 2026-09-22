@@ -1,6 +1,6 @@
-# Serve files from the deck — static path helpers for Vaab HTTP servers.
+# Serve files from tape — static path helpers for Vaab HTTP servers.
 #
-#   let target = deck.for_path("web/dist", filepath)
+#   let target = tape.for_path("web/dist", filepath)
 #   reply file target
 
 to for_path(root: Text, requested: Text) returns Text {
