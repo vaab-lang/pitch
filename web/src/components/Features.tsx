@@ -48,7 +48,7 @@ const FEATURES: {
     code: `cast Account {
     changing balance: Int = 0
 
-    to deposit(amount: Int) {
+    deposit(amount: Int) {
         self.balance = self.balance + amount
     }
 }
