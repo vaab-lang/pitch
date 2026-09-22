@@ -13,19 +13,40 @@ export type Timed<T> = {
   ms: number
 }
 
-async function timedFetch<T>(input: string, init?: RequestInit): Promise<Timed<T>> {
+const DEFAULT_TIMEOUT_MS = 12_000
+
+async function timedFetch<T>(
+  input: string,
+  init?: RequestInit,
+  timeoutMs = DEFAULT_TIMEOUT_MS,
+): Promise<Timed<T>> {
   const started = performance.now()
-  const response = await fetch(input, init)
-  const ms = performance.now() - started
-  if (!response.ok) {
-    const message = await response.text()
-    throw new Error(message || `request failed (${response.status})`)
+  const controller = new AbortController()
+  const timer = window.setTimeout(() => controller.abort(), timeoutMs)
+
+  try {
+    const response = await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    })
+    const ms = performance.now() - started
+    if (!response.ok) {
+      const message = await response.text()
+      throw new Error(message || `request failed (${response.status})`)
+    }
+    if (response.status === 204) {
+      return { data: undefined as T, ms }
+    }
+    const data = (await response.json()) as T
+    return { data, ms }
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw new Error('request timed out — the server may be stuck; try again')
+    }
+    throw error
+  } finally {
+    window.clearTimeout(timer)
   }
-  if (response.status === 204) {
-    return { data: undefined as T, ms }
-  }
-  const data = (await response.json()) as T
-  return { data, ms }
 }
 
 function base(): string {
