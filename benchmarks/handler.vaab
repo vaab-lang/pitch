@@ -1,0 +1,34 @@
+choice StoreError { Failed(message: Text) }
+type Session can Json {
+    user: Text
+    role: Text
+}
+to handle(store: Store, user: Text) returns Text or fails StoreError {
+    match store.get("session-{user}") {
+        when found role then {
+            let session = Session.new(user: user, role: role)
+            return success to_json(session)
+        }
+        when nothing then {
+            match store.set("session-{user}", "member") {
+                when success _ then {
+                    let session = Session.new(user: user, role: "member")
+                    return success to_json(session)
+                }
+                when failure error then match error { when Failed(message) then { return failure StoreError.Failed(message) } }
+            }
+        }
+    }
+}
+to bench() {
+    match Store.open("/var/folders/_k/vl10h9fn0ygcfzsv9cffksnr0000gn/T/tmpcvoddew0/bench.kv") {
+        when success store then {
+            let changing i = 0
+            while i < 200 {
+                match handle(store, "{i % 20}") { when success _ then { i = i + 1 } when failure _ then { return } }
+            }
+        }
+        when failure _ then { return }
+    }
+}
+bench()

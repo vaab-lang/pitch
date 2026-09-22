@@ -1,0 +1,11 @@
+choice HttpError { Failed(message: Text) }
+to bench() {
+    let changing i = 0
+    while i < 50 {
+        match http.get("http://127.0.0.1:9998/health") {
+            when success _ then { i = i + 1 }
+            when failure _ then { return }
+        }
+    }
+}
+bench()

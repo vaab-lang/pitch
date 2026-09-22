@@ -1,0 +1,23 @@
+choice StoreError { Failed(message: Text) }
+to bench() {
+    match Store.open("/var/folders/_k/vl10h9fn0ygcfzsv9cffksnr0000gn/T/tmpcvoddew0/bench.kv") {
+        when success store then {
+            let changing i = 0
+            while i < 200 {
+                match store.set("session:{i}", "signed-in") {
+                    when success _ then { i = i + 1 }
+                    when failure _ then { return }
+                }
+            }
+            let changing j = 0
+            while j < 200 {
+                match store.get("session:{j}") {
+                    when found _ then { j = j + 1 }
+                    when nothing then { j = j + 1 }
+                }
+            }
+        }
+        when failure _ then { return }
+    }
+}
+bench()

@@ -1,0 +1,14 @@
+type User can Json {
+    id: Int
+    name: Text
+    active: Bool
+}
+to bench() {
+    let changing i = 0
+    while i < 1000 {
+        let user = User.new(id: i, name: "user", active: yes)
+        let json = to_json(user)
+        i = i + 1
+    }
+}
+bench()
