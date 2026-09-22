@@ -44,6 +44,32 @@ let ada = Dog.new(name: "Ada", breed: "collie")
 print(ada.speak())`,
   },
   {
+    id: 'query',
+    label: 'Query',
+    description: 'Fluent Db and Store relations',
+    source: `choice DbError { Failed(message: Text) }
+
+to demo() returns Text or fails DbError {
+    let db = try Db.connect("sqlite::memory:")
+    let empty: list of Text = []
+    try db.execute("create table tasks (id text, owner text)", empty)
+    try db.from("tasks").insert({"id": "1", "owner": "ada"})
+    let rows = try db
+        .from("tasks")
+        .where_eq("owner", "ada")
+        .order_desc("id")
+        .all()
+    return success "ada has {rows.count} tasks"
+}
+
+match demo() {
+    when success message then print(message)
+    when failure error then match error {
+        when Failed(message) then print(message)
+    }
+}`,
+  },
+  {
     id: 'match',
     label: 'Match',
     description: 'Pattern matching on choices',

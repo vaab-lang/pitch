@@ -3,6 +3,7 @@ import { oneDark } from '@codemirror/theme-one-dark'
 import {
   Braces,
   Copy,
+  Database,
   Hand,
   Layers,
   Loader2,
@@ -32,6 +33,7 @@ const EXAMPLE_ICONS: Record<string, LucideIcon> = {
   hello: Hand,
   collections: Layers,
   casts: Shapes,
+  query: Database,
   match: Braces,
 }
 

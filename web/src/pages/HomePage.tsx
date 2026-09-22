@@ -1,3 +1,4 @@
+import { BuiltIn } from '@/components/BuiltIn'
 import { Features } from '@/components/Features'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
@@ -16,6 +17,7 @@ export function HomePage() {
         <Hero />
         <VibeCoding />
         <ReadableBackends />
+        <BuiltIn />
         <Features />
         <Performance />
         <Playground />

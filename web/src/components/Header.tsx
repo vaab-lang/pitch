@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 
 const NAV = [
   { href: '/#vibe-coding', label: 'Vibe coding', homeOnly: true },
+  { href: '/#built-in', label: 'Built in', homeOnly: true },
   { href: '/#features', label: 'Features', homeOnly: true },
   { href: '/#performance', label: 'Performance', homeOnly: true },
   { href: '/spec', label: 'Spec', homeOnly: false },
