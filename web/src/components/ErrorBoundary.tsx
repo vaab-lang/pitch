@@ -9,7 +9,7 @@ type State = {
   message: string | null
 }
 
-/** Keeps a route failure from blanking the whole pitch site. */
+/** Keeps a route failure from blanking the whole site. */
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { message: null }
 
@@ -19,7 +19,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: unknown, info: ErrorInfo) {
-    console.error('pitch route error', error, info.componentStack)
+    console.error('site route error', error, info.componentStack)
   }
 
   render() {

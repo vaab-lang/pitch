@@ -24,11 +24,11 @@ const FEATURES: {
     label: 'Syntax',
     title: 'Plain English on the page',
     description:
-      'Functions start with `to`. Booleans are `yes` and `no`. Strings interpolate with `{name}`.',
+      'Functions are bare names. Booleans are `yes` and `no`. Strings interpolate with `{name}`.',
     detail: 'No arrow functions. No nested ternaries.',
     filename: 'greet.vaab',
     minHeight: '148px',
-    code: `to greet(name: Text) returns Text {
+    code: `greet(name: Text) returns Text {
     if active yes {
         return "hi, {name}"
     }

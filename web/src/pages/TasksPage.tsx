@@ -221,7 +221,7 @@ export function TasksPage() {
           {!loading && todos.length === 0 && (
             <li className="rounded-2xl border border-dashed border-slate-800 px-4 py-12 text-center text-slate-500">
               Nothing here yet. Add a todo — it lands in{' '}
-              <code className="font-mono text-emerald-400/80">pitch-todos.vaab.kv</code>.
+              <code className="font-mono text-emerald-400/80">site-todos.vaab.kv</code>.
             </li>
           )}
 
@@ -276,7 +276,7 @@ export function TasksPage() {
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-400/90">
             main.vaab
           </p>
-          <pre className="overflow-x-auto whitespace-pre text-[13px] text-slate-300">{`let store = try Store.open("pitch-todos.vaab.kv")
+          <pre className="overflow-x-auto whitespace-pre text-[13px] text-slate-300">{`let store = try Store.open("site-todos.vaab.kv")
 let rows = try store
     .from("todo:{visitor}:")
     .order_desc("created")

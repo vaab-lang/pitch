@@ -31,13 +31,13 @@ print(ages.get("Ada") otherwise 0)`,
     source: `cast Animal {
     changing name: Text
 
-    to speak() returns Text = self.name
+    speak() returns Text = self.name
 }
 
 cast Dog entertains Animal {
     changing breed: Text
 
-    to speak() returns Text = "{self.name}, a {self.breed}"
+    speak() returns Text = "{self.name}, a {self.breed}"
 }
 
 let ada = Dog.new(name: "Ada", breed: "collie")
@@ -47,19 +47,17 @@ print(ada.speak())`,
     id: 'query',
     label: 'Query',
     description: 'Fluent Db and Store relations',
-    source: `choice DbError { Failed(message: Text) }
-
-to demo() returns Text or fails DbError {
+    source: `demo() returns Text or fails DbError {
     let db = try Db.connect("sqlite::memory:")
-    let empty: list of Text = []
+    let empty: [Text] = []
     try db.execute("create table tasks (id text, owner text)", empty)
     try db.from("tasks").insert({"id": "1", "owner": "ada"})
     let rows = try db
         .from("tasks")
-        .where_eq("owner", "ada")
+        .where("owner").is("ada")
         .order_desc("id")
         .all()
-    return success "ada has {rows.count} tasks"
+    return "ada has {rows.count} tasks"
 }
 
 match demo() {
@@ -73,14 +71,14 @@ match demo() {
     id: 'logging',
     label: 'Logging',
     description: 'Levels, formats, and structured fields',
-    source: `let log = Logger.memory()
-log.set_level("debug")
-log.set_format("json")
+    source: `log.info("no setup needed")
 
-log.info("server starting")
-log.write("warn", "slow query", {"ms": "42", "table": "tasks"})
+let mem = Logger.memory()
+mem.set_level("debug")
+mem.set_format("json")
+mem.write("warn", "slow query", {"ms": "42", "table": "tasks"})
 
-for each line in log.lines {
+for each line in mem.lines {
     print(line)
 }`,
   },
@@ -94,7 +92,7 @@ for each line in log.lines {
     Stormy
 }
 
-to describe(m: Mood) returns Text {
+describe(m: Mood) returns Text {
     match m {
         when Bright then "sun on your face"
         when Cloudy then "soft light through glass"

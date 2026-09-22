@@ -1,4 +1,4 @@
-# pitch — landing page, playground, and KV-backed todo demo.
+# site — landing page, playground, and KV-backed todo demo.
 #
 #   cd web && npm run build
 #   vaab serve main.vaab
@@ -6,56 +6,45 @@
 # POST /api/run is handled natively by vaab-server (embedded VM playground).
 # Todos are scoped per visitor id (cookie on the client, path segment here).
 
-choice StoreError {
-    Failed(message: Text)
-}
-
-choice LogError {
-    Failed(message: Text)
-}
-
 choice ApiError {
     BadRequest(message: Text)
     Store(message: Text)
 }
 
-type Health can Json {
+type Health {
     ok: Bool
     service: Text
 }
 
-type NewTodo can Json {
+type NewTodo {
     title: Text
 }
 
-type OkCount can Json {
+type OkCount {
     ok: Bool
     count: Int
 }
 
-type Cleared can Json {
+type Cleared {
     ok: Bool
 }
 
-let log = Logger.stderr()
-log.set_level("info")
-log.set_format("text")
-log.info("pitch starting")
+log.info("site starting")
 
-to api_from_store(error: StoreError) returns ApiError {
+api_from_store(error: StoreError) returns ApiError {
     match error {
         when Failed(message) then { return ApiError.Store(message) }
     }
 }
 
-to open_todos() returns Store or fails ApiError {
-    match Store.open("pitch-todos.vaab.kv") {
-        when success store then { return success store }
-        when failure error then { return failure api_from_store(error) }
+open_todos() returns Store or fails ApiError {
+    match Store.open("site-todos.vaab.kv") {
+        when success store then { return store }
+        when failure error then { fail api_from_store(error) }
     }
 }
 
-to visitor_ok(visitor: Text) returns Bool {
+visitor_ok(visitor: Text) returns Bool {
     if visitor.is_empty { return no }
     if visitor.contains("..") { return no }
     if visitor.contains("/") { return no }
@@ -64,28 +53,28 @@ to visitor_ok(visitor: Text) returns Bool {
     return yes
 }
 
-to prefix_for(visitor: Text) returns Text {
+prefix_for(visitor: Text) returns Text {
     return "todo:{visitor}:"
 }
 
-to list_todos(visitor: Text) returns list of map of Text to Text or fails ApiError {
+list_todos(visitor: Text) returns [{Text: Text}] or fails ApiError {
     if not visitor_ok(visitor) {
-        return failure ApiError.BadRequest("bad visitor")
+        fail ApiError.BadRequest("bad visitor")
     }
     let store = try open_todos()
     let prefix = prefix_for(visitor)
     match store.from(prefix).order_desc("created").all() {
-        when success rows then { return success rows }
-        when failure error then { return failure api_from_store(error) }
+        when success rows then { return rows }
+        when failure error then { fail api_from_store(error) }
     }
 }
 
-to create_todo(visitor: Text, title: Text) returns map of Text to Text or fails ApiError {
+create_todo(visitor: Text, title: Text) returns {Text: Text} or fails ApiError {
     if not visitor_ok(visitor) {
-        return failure ApiError.BadRequest("bad visitor")
+        fail ApiError.BadRequest("bad visitor")
     }
     if title.is_empty {
-        return failure ApiError.BadRequest("title is required")
+        fail ApiError.BadRequest("title is required")
     }
     let store = try open_todos()
     let prefix = prefix_for(visitor)
@@ -102,7 +91,7 @@ to create_todo(visitor: Text, title: Text) returns map of Text to Text or fails 
                 "created": created,
             }) {
                 when success _ then {
-                    return success {
+                    return {
                         "key": key,
                         "id": id,
                         "title": title,
@@ -110,34 +99,34 @@ to create_todo(visitor: Text, title: Text) returns map of Text to Text or fails 
                         "created": created,
                     }
                 }
-                when failure error then { return failure api_from_store(error) }
+                when failure error then { fail api_from_store(error) }
             }
         }
-        when failure error then { return failure api_from_store(error) }
+        when failure error then { fail api_from_store(error) }
     }
 }
 
-to toggle_todo(visitor: Text, id: Text) returns map of Text to Text or fails ApiError {
+toggle_todo(visitor: Text, id: Text) returns {Text: Text} or fails ApiError {
     if not visitor_ok(visitor) {
-        return failure ApiError.BadRequest("bad visitor")
+        fail ApiError.BadRequest("bad visitor")
     }
     if id.is_empty or id.contains("..") or id.contains("/") {
-        return failure ApiError.BadRequest("bad id")
+        fail ApiError.BadRequest("bad id")
     }
     let store = try open_todos()
     let prefix = prefix_for(visitor)
     let key = "{prefix}{id}"
-    match store.from(prefix).where_eq("key", key).first() {
+    match store.from(prefix).where("key").is(key).first() {
         when success found_row then {
             match found_row {
                 when found row then {
                     let done = row.get("done") otherwise "no"
                     let next = if done == "yes" { "no" } else { "yes" }
-                    match store.from(prefix).where_eq("key", key).update({"done": next}) {
+                    match store.from(prefix).where("key").is(key).update({"done": next}) {
                         when success _ then {
                             let title = row.get("title") otherwise ""
                             let created = row.get("created") otherwise ""
-                            return success {
+                            return {
                                 "key": key,
                                 "id": id,
                                 "title": title,
@@ -145,47 +134,47 @@ to toggle_todo(visitor: Text, id: Text) returns map of Text to Text or fails Api
                                 "created": created,
                             }
                         }
-                        when failure error then { return failure api_from_store(error) }
+                        when failure error then { fail api_from_store(error) }
                     }
                 }
                 when nothing then {
-                    return failure ApiError.BadRequest("todo not found")
+                    fail ApiError.BadRequest("todo not found")
                 }
             }
         }
-        when failure error then { return failure api_from_store(error) }
+        when failure error then { fail api_from_store(error) }
     }
 }
 
-to delete_todo(visitor: Text, id: Text) returns OkCount or fails ApiError {
+delete_todo(visitor: Text, id: Text) returns OkCount or fails ApiError {
     if not visitor_ok(visitor) {
-        return failure ApiError.BadRequest("bad visitor")
+        fail ApiError.BadRequest("bad visitor")
     }
     if id.is_empty or id.contains("..") or id.contains("/") {
-        return failure ApiError.BadRequest("bad id")
+        fail ApiError.BadRequest("bad id")
     }
     let store = try open_todos()
     let prefix = prefix_for(visitor)
     let key = "{prefix}{id}"
-    match store.from(prefix).where_eq("key", key).delete() {
-        when success count then { return success OkCount.new(ok: yes, count: count) }
-        when failure error then { return failure api_from_store(error) }
+    match store.from(prefix).where("key").is(key).delete() {
+        when success count then { return OkCount.new(ok: yes, count: count) }
+        when failure error then { fail api_from_store(error) }
     }
 }
 
-to clear_todos(visitor: Text) returns Cleared or fails ApiError {
+clear_todos(visitor: Text) returns Cleared or fails ApiError {
     if not visitor_ok(visitor) {
-        return failure ApiError.BadRequest("bad visitor")
+        fail ApiError.BadRequest("bad visitor")
     }
     let store = try open_todos()
     let prefix = prefix_for(visitor)
     match store.from(prefix).delete() {
-        when success _ then { return success Cleared.new(ok: yes) }
-        when failure error then { return failure api_from_store(error) }
+        when success _ then { return Cleared.new(ok: yes) }
+        when failure error then { fail api_from_store(error) }
     }
 }
 
-to explain(error: ApiError) returns Text {
+explain(error: ApiError) returns Text {
     match error {
         when BadRequest(message) then { return message }
         when Store(message) then { return message }
@@ -194,14 +183,11 @@ to explain(error: ApiError) returns Text {
 
 serve on port 8787 {
     before every request {
-        log.write("info", "incoming", {
-            "method": request.method,
-            "path": request.path,
-        })
+        log.info("incoming {request.method} {request.path}")
     }
 
     route get "/health" {
-        reply with Health.new(ok: yes, service: "pitch")
+        reply with Health.new(ok: yes, service: "site")
     }
 
     route get "/api/todos/{visitor: Text}" {

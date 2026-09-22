@@ -4,7 +4,7 @@
 
 services:
   - type: web
-    name: pitch
+    name: site
     runtime: docker
     plan: free
     dockerfilePath: ./Dockerfile

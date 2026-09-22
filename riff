@@ -1,5 +1,5 @@
-riff pitch 0.1.0
-description The Vaab pitch — landing page and browser playground
+riff site 0.1.3
+description The Vaab site — landing page and browser playground
 by vaab-lang
 licence MIT
 needs vaab at 0.1

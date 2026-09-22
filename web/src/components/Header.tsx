@@ -61,7 +61,7 @@ export function Header() {
           </div>
           <span className="truncate text-xl leading-none">Vaab</span>
           <Badge variant="secondary" className="hidden normal-case sm:inline-flex">
-            v0.1.2
+            v0.1.3
           </Badge>
         </Link>
 

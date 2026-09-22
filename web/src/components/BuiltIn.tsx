@@ -18,7 +18,7 @@ function VaabToken({ children }: { children: ReactNode }) {
 
 const DB_QUERY = `let rows = try db
     .from("tasks")
-    .where_eq("owner", user.id)
+    .where("owner").is(user.id)
     .order_desc("id")
     .limit(20)
     .all()
@@ -29,14 +29,14 @@ try db.from("tasks").insert({
     "owner": user.id,
 })
 
-match db.from("tasks").where_eq("id", id).first() {
+match db.from("tasks").where("id").is(id).first() {
     when found row then print(row.get("title") otherwise "?")
     when nothing then print("missing row")
 }`
 
 const STORE_QUERY = `let sessions = try store
     .from("session:")
-    .where_eq("value", "signed-in")
+    .equals("value", "signed-in")
     .all()
 
 try store.from("session:").insert({
@@ -58,7 +58,7 @@ const NICEITIES: {
     title: 'Chain filters and sort',
     detail: (
       <>
-        <VaabToken>.where_eq</VaabToken>, <VaabToken>.where_like</VaabToken>,{' '}
+        <VaabToken>.where</VaabToken>.<VaabToken>is</VaabToken>, <VaabToken>.equals</VaabToken>,{' '}
         <VaabToken>.order_desc</VaabToken>, <VaabToken>.limit</VaabToken>, and{' '}
         <VaabToken>.offset</VaabToken> stack on one relation. Terminals are{' '}
         <VaabToken>.all()</VaabToken>, <VaabToken>.first()</VaabToken>, and{' '}

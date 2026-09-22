@@ -1,9 +1,9 @@
-# pitch — Vaab landing page + playground
+# site — Vaab landing page + playground
 #
 # The HTTP server is Vaab itself (`vaab serve main.vaab`). No nginx/Caddy.
 #
-# Build:  docker build --platform linux/amd64 -t pitch .
-# Run:    docker run --rm -p 8787:8787 -e PORT=8787 pitch
+# Build:  docker build --platform linux/amd64 -t site .
+# Run:    docker run --rm -p 8787:8787 -e PORT=8787 site
 
 # ── frontend ──────────────────────────────────────────────────────────
 FROM node:22-bookworm-slim AS web
@@ -20,24 +20,24 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Prebuilt Vaab CLI (linux x86_64). Logger + request logging need >=0.1.2.
-ARG VAAB_VERSION=v0.1.2
+# Prebuilt Vaab CLI (linux x86_64). Readability round needs >=0.1.3.
+ARG VAAB_VERSION=v0.1.3
 RUN curl -fsSL \
       "https://github.com/vaab-lang/vaab/releases/download/${VAAB_VERSION}/vaab-linux-x86_64" \
       -o /usr/local/bin/vaab \
     && chmod +x /usr/local/bin/vaab \
-    && vaab version | grep -q 0.1.2
+    && vaab version | grep -q 0.1.3
 
-RUN useradd --create-home --shell /bin/bash pitch
-USER pitch
-WORKDIR /home/pitch/app
-ENV HOME=/home/pitch \
+RUN useradd --create-home --shell /bin/bash site
+USER site
+WORKDIR /home/site/app
+ENV HOME=/home/site \
     PORT=8787
 
-COPY --chown=pitch:pitch main.vaab riff ./
-COPY --from=web --chown=pitch:pitch /src/web/dist ./web/dist
-COPY --chown=pitch:pitch docker-entrypoint.sh /home/pitch/docker-entrypoint.sh
-RUN chmod +x /home/pitch/docker-entrypoint.sh
+COPY --chown=site:site main.vaab riff ./
+COPY --from=web --chown=site:site /src/web/dist ./web/dist
+COPY --chown=site:site docker-entrypoint.sh /home/site/docker-entrypoint.sh
+RUN chmod +x /home/site/docker-entrypoint.sh
 
 EXPOSE 8787
-ENTRYPOINT ["/home/pitch/docker-entrypoint.sh"]
+ENTRYPOINT ["/home/site/docker-entrypoint.sh"]
