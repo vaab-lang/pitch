@@ -4,9 +4,8 @@
   "version": "0.1.0",
   "description": "Vaab language landing page and browser playground",
   "scripts": {
-    "dev:web": "npm run dev --prefix web",
-    "dev:runner": "cargo run --manifest-path runner/Cargo.toml",
     "build:web": "npm run build --prefix web",
-    "build:runner": "cargo build --release --manifest-path runner/Cargo.toml"
+    "serve": "npm run build:web && vaab serve main.vaab",
+    "dev:web": "npm run dev --prefix web"
   }
 }

@@ -1,0 +1,30 @@
+# Vaab site — landing page, playground, and static assets in one server.
+#
+#   cd web && npm run build
+#   vaab serve main.vaab
+#
+# POST /api/run is handled natively by vaab-server (embedded VM playground).
+# Static file path logic mirrors express.for_path from the express riff.
+
+need express from ./riffs/express
+
+type Health can Json {
+    ok: Bool
+    service: Text
+}
+
+serve on port 8787 {
+    route get "/health" {
+        reply with Health.new(ok: yes, service: "vaab-site")
+    }
+
+    route get "/{*filepath}" {
+        if filepath.contains("..") {
+            reply text "forbidden" as "text/plain; charset=utf-8" status 403
+        }
+
+        let name = if filepath.is_empty { "index.html" } else { filepath }
+        let target = "web/dist/{name}"
+        reply file target
+    }
+}

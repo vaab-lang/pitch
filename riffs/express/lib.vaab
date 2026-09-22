@@ -1,0 +1,26 @@
+# Express-style helpers for Vaab HTTP servers.
+#
+#   let target = express.for_path("web/dist", filepath)
+#   reply file target
+
+to for_path(root: Text, requested: Text) returns Text {
+    if requested.contains("..") {
+        return "{root}/__forbidden__"
+    }
+
+    let name = if requested.is_empty { "index.html" } else { requested }
+    return "{root}/{name}"
+}
+
+to mime_for(path: Text) returns Text {
+    if path.contains(".html") { return "text/html; charset=utf-8" }
+    if path.contains(".css") { return "text/css; charset=utf-8" }
+    if path.contains(".js") { return "text/javascript; charset=utf-8" }
+    if path.contains(".json") { return "application/json; charset=utf-8" }
+    if path.contains(".svg") { return "image/svg+xml" }
+    if path.contains(".png") { return "image/png" }
+    if path.contains(".ico") { return "image/x-icon" }
+    if path.contains(".woff2") { return "font/woff2" }
+    if path.contains(".woff") { return "font/woff" }
+    return "application/octet-stream"
+}

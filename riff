@@ -1,0 +1,6 @@
+riff vaab_site 0.1.0
+description Vaab language landing page and browser playground
+by vaab-lang
+licence MIT
+needs vaab at 0.1
+need express from ./riffs/express
