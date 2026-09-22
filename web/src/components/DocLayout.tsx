@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight, Scale } from 'lucide-react'
+import { BookOpen, ChevronRight, History, Scale } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 
 import { MarkdownDoc } from '@/components/MarkdownDoc'
@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 
 type DocLayoutProps = {
   badge: string
-  badgeIcon: 'spec' | 'decisions'
+  badgeIcon: 'spec' | 'decisions' | 'changelog'
   description: string
   content: string
   headings: DocHeading[]
@@ -28,7 +28,8 @@ export function DocLayout({
   sibling,
 }: DocLayoutProps) {
   const location = useLocation()
-  const Icon = badgeIcon === 'decisions' ? Scale : BookOpen
+  const Icon =
+    badgeIcon === 'decisions' ? Scale : badgeIcon === 'changelog' ? History : BookOpen
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100">

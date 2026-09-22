@@ -13,6 +13,7 @@ const NAV = [
   { href: '/tasks', label: 'Todos', homeOnly: false },
   { href: '/spec', label: 'Spec', homeOnly: false },
   { href: '/decisions', label: 'Decisions', homeOnly: false },
+  { href: '/changelog', label: 'Changelog', homeOnly: false },
   { href: '/#playground', label: 'Try it', homeOnly: true },
 ] as const
 
@@ -48,6 +49,7 @@ export function Header() {
   const onDocPage =
     location.pathname === '/spec' ||
     location.pathname === '/decisions' ||
+    location.pathname === '/changelog' ||
     location.pathname === '/tasks'
 
   return (
@@ -59,7 +61,7 @@ export function Header() {
           </div>
           <span className="truncate text-xl leading-none">Vaab</span>
           <Badge variant="secondary" className="hidden normal-case sm:inline-flex">
-            v0.1
+            v0.1.2
           </Badge>
         </Link>
 

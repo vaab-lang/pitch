@@ -70,6 +70,21 @@ match demo() {
 }`,
   },
   {
+    id: 'logging',
+    label: 'Logging',
+    description: 'Levels, formats, and structured fields',
+    source: `let log = Logger.memory()
+log.set_level("debug")
+log.set_format("json")
+
+log.info("server starting")
+log.write("warn", "slow query", {"ms": "42", "table": "tasks"})
+
+for each line in log.lines {
+    print(line)
+}`,
+  },
+  {
     id: 'match',
     label: 'Match',
     description: 'Pattern matching on choices',

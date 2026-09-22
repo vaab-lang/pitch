@@ -80,20 +80,21 @@ select {
     id: 'io',
     icon: Blocks,
     label: 'I/O',
-    title: 'HTTP, SQLite, JSON, env vars',
+    title: 'HTTP, SQLite, JSON, logging',
     description:
-      'Route handlers, database queries, and JSON encode/decode are built in. No FFI shim, no package hunt.',
-    detail: 'One binary runs the server, talks to SQLite, and calls outbound HTTP.',
+      'Route handlers, database queries, JSON encode/decode, and a real Logger are built in. No FFI shim, no package hunt.',
+    detail: 'One binary runs the server, talks to SQLite, logs requests, and calls outbound HTTP.',
     filename: 'server.vaab',
-    minHeight: '168px',
-    code: `serve at port 8080 {
-    route get "/users/{id: Int}" {
-        let user = try db.find(id)
-        reply with user
-    }
+    minHeight: '200px',
+    code: `let log = Logger.stderr()
+log.set_format("json")
 
-    route post "/users" expecting NewUser as body {
-        reply with db.insert(body)
+serve on port 8080 {
+    before every request {
+        log.info("{request.method} {request.path}")
+    }
+    route get "/users/{id: Int}" {
+        reply with try db.find(id)
     }
 }`,
   },

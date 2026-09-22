@@ -10,6 +10,10 @@ choice StoreError {
     Failed(message: Text)
 }
 
+choice LogError {
+    Failed(message: Text)
+}
+
 choice ApiError {
     BadRequest(message: Text)
     Store(message: Text)
@@ -32,6 +36,11 @@ type OkCount can Json {
 type Cleared can Json {
     ok: Bool
 }
+
+let log = Logger.stderr()
+log.set_level("info")
+log.set_format("text")
+log.info("pitch starting")
 
 to api_from_store(error: StoreError) returns ApiError {
     match error {
@@ -184,6 +193,13 @@ to explain(error: ApiError) returns Text {
 }
 
 serve on port 8787 {
+    before every request {
+        log.write("info", "incoming", {
+            "method": request.method,
+            "path": request.path,
+        })
+    }
+
     route get "/health" {
         reply with Health.new(ok: yes, service: "pitch")
     }
@@ -221,6 +237,10 @@ serve on port 8787 {
     }
 
     route get "/decisions" {
+        reply file "web/dist/index.html"
+    }
+
+    route get "/changelog" {
         reply file "web/dist/index.html"
     }
 

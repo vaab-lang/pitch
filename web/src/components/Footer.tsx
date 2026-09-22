@@ -27,6 +27,9 @@ export function Footer() {
           <Link to="/decisions" className="transition-colors hover:text-white">
             Design decisions
           </Link>
+          <Link to="/changelog" className="transition-colors hover:text-white">
+            Changelog
+          </Link>
         </nav>
 
         <p className="text-xs text-slate-600">

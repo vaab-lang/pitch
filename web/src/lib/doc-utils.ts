@@ -33,5 +33,6 @@ export function rewriteDocLink(href: string | undefined): string | undefined {
   if (!href) return href
   if (href === 'DECISIONS.md' || href.endsWith('/DECISIONS.md')) return '/decisions'
   if (href === 'LANGUAGE.md' || href.endsWith('/LANGUAGE.md')) return '/spec'
+  if (href === 'CHANGELOG.md' || href.endsWith('/CHANGELOG.md')) return '/changelog'
   return href
 }

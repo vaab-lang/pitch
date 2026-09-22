@@ -24,8 +24,9 @@ cargo run --bin vaab -- serve /path/to/vaab-site/main.vaab
 
 | Path | Purpose |
 |------|---------|
-| `main.vaab` | Unified server — static files, health, KV todos |
+| `main.vaab` | Unified server — static files, health, KV todos, request logging |
 | `web/` | React + Vite landing page with CodeMirror playground |
+| `/changelog` | Release notes (Logger landed in 0.1.2) |
 
 Static files are served with Vaab’s `reply file` (no reverse proxy).
 
@@ -40,6 +41,9 @@ Browser
    └─ POST /api/run           → vaab-server playground (embedded VM)
 ```
 
+Request logging uses the stdlib `Logger` (stderr, text format by default). The
+server process also logs method/path/status/ms. Set `VAAB_LOG_LEVEL` /
+`VAAB_LOG_FORMAT` to change both.
 ## Todos demo
 
 `/tasks` is a classic todo list served by the same Vaab process. The browser

@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { DecisionsPage } from '@/pages/DecisionsPage'
+import { ChangelogPage } from '@/pages/ChangelogPage'
 import { HomePage } from '@/pages/HomePage'
 import { SpecPage } from '@/pages/SpecPage'
 import { TasksPage } from '@/pages/TasksPage'
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/tasks" element={<TasksPage />} />
             <Route path="/spec" element={<SpecPage />} />
             <Route path="/decisions" element={<DecisionsPage />} />
+            <Route path="/changelog" element={<ChangelogPage />} />
           </Routes>
         </ErrorBoundary>
       </BrowserRouter>
