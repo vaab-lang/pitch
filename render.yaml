@@ -1,0 +1,12 @@
+# Free-tier Docker deploy on Render (spins down after ~15 min idle).
+# Dashboard: New → Blueprint → this repo, or connect and apply this file.
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: pitch
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health

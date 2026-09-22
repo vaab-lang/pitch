@@ -1,0 +1,58 @@
+# pitch — Vaab landing page + playground
+#
+# The HTTP server is Vaab itself (`vaab serve main.vaab`). No nginx/Caddy.
+#
+# Build:  docker build --platform linux/amd64 -t pitch .
+# Run:    docker run --rm -p 8787:8787 -e PORT=8787 pitch
+
+# ── frontend ──────────────────────────────────────────────────────────
+FROM node:22-bookworm-slim AS web
+WORKDIR /src/web
+COPY web/package.json web/package-lock.json ./
+RUN npm ci
+COPY web/ ./
+RUN npm run build
+
+# ── runtime ───────────────────────────────────────────────────────────
+FROM debian:bookworm-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Prebuilt Vaab CLI (linux x86_64). Override with --build-arg VAAB_VERSION=...
+ARG VAAB_VERSION=latest
+RUN curl -fsSL \
+      "https://github.com/vaab-lang/vaab/releases/download/${VAAB_VERSION}/vaab-linux-x86_64" \
+      -o /usr/local/bin/vaab \
+    && chmod +x /usr/local/bin/vaab \
+    && vaab version
+
+# Non-root user; riffs live under $HOME/.vaab
+RUN useradd --create-home --shell /bin/bash pitch
+USER pitch
+WORKDIR /home/pitch/app
+ENV HOME=/home/pitch \
+    PORT=8787
+
+# Official tape riff (static file helpers)
+RUN mkdir -p /home/pitch/.vaab/riffs/tape \
+    && curl -fsSL https://raw.githubusercontent.com/vaab-lang/tape/main/riff \
+         -o /home/pitch/.vaab/riffs/tape/riff \
+    && curl -fsSL https://raw.githubusercontent.com/vaab-lang/tape/main/lib.vaab \
+         -o /home/pitch/.vaab/riffs/tape/lib.vaab
+
+COPY --chown=pitch:pitch main.vaab riff ./
+COPY --from=web --chown=pitch:pitch /src/web/dist ./web/dist
+COPY --chown=pitch:pitch docker-entrypoint.sh /home/pitch/docker-entrypoint.sh
+
+# Lockfile points at the installed tape copy (absolute path inside the image).
+RUN printf '%s\n' \
+      '# written for the Docker image — tape is installed under ~/.vaab/riffs' \
+      '' \
+      "path tape /home/pitch/.vaab/riffs/tape" \
+      > /home/pitch/app/needed.lock \
+    && chmod +x /home/pitch/docker-entrypoint.sh
+
+EXPOSE 8787
+ENTRYPOINT ["/home/pitch/docker-entrypoint.sh"]

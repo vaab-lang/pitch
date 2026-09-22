@@ -72,6 +72,28 @@ vaab serve main.vaab
 
 For local riff work, use a path dep: `need tape from "../tape"`, or copy into `~/.vaab/riffs` after `riff install tape`.
 
+## Docker
+
+Vaab is the web server end-to-end: the container runs `vaab serve main.vaab` (static files via [tape](https://github.com/vaab-lang/tape), `/health`, and `POST /api/run`). Nothing else fronts HTTP.
+
+```sh
+docker build --platform linux/amd64 -t pitch .
+docker run --rm -p 8787:8787 -e PORT=8787 pitch
+# → http://127.0.0.1:8787
+```
+
+The image downloads the Vaab linux binary and the tape riff, builds `web/`, and rewrites `serve on port` from `$PORT` at start (so Render / Cloud Run work).
+
+## Free hosting (Render)
+
+[`render.yaml`](./render.yaml) deploys this Dockerfile on Render’s free web plan (spins down after ~15 minutes idle; cold start ~1 min). Deploy from the private host repo (see below), not the public pitch sources.
+
+1. Connect the private GitHub repo in [Render](https://dashboard.render.com).
+2. **New → Blueprint** (or **Web Service** → Docker → plan **Free**).
+3. After deploy, open the `*.onrender.com` URL; `/health` should return JSON.
+
+Fly.io no longer has a lasting free tier for new accounts; Render’s free Docker web service is the practical zero-cost option.
+
 ## License
 
 MIT — same as Vaab.

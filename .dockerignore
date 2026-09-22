@@ -1,0 +1,14 @@
+.git
+.github
+.gitignore
+*.md
+!README.md
+benchmarks
+web/node_modules
+web/dist
+web/.vite
+.env
+.env.*
+.DS_Store
+needed.lock
+*.log
