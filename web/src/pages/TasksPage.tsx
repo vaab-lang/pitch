@@ -1,9 +1,8 @@
 import { Check, Loader2, Plus, Trash2, Zap } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
-
 import { Footer } from '@/components/Footer'
-import { Header } from '@/components/Header'
+import { TodoHeader } from '@/components/TodoHeader'
+import { SITE_ORIGIN } from '@/lib/app-mode'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -128,7 +127,7 @@ export function TasksPage() {
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-50">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_-10%,rgba(16,185,129,0.07),transparent)]" />
-      <Header />
+      <TodoHeader />
 
       <main className="relative mx-auto max-w-2xl px-4 pb-24 pt-28 sm:px-6 md:pt-32">
         <div className="mb-10">
@@ -221,7 +220,7 @@ export function TasksPage() {
           {!loading && todos.length === 0 && (
             <li className="rounded-2xl border border-dashed border-slate-800 px-4 py-12 text-center text-slate-500">
               Nothing here yet. Add a todo — it lands in{' '}
-              <code className="font-mono text-emerald-400/80">site-todos.vaab.kv</code>.
+              <code className="font-mono text-emerald-400/80">todo-todos.vaab.kv</code>.
             </li>
           )}
 
@@ -276,7 +275,7 @@ export function TasksPage() {
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-400/90">
             main.vaab
           </p>
-          <pre className="overflow-x-auto whitespace-pre text-[13px] text-slate-300">{`let store = try Store.open("site-todos.vaab.kv")
+          <pre className="overflow-x-auto whitespace-pre text-[13px] text-slate-300">{`let store = try Store.open("todo-todos.vaab.kv")
 let rows = try store
     .from("todo:{visitor}:")
     .order_desc("created")
@@ -284,9 +283,12 @@ let rows = try store
           <p className="mt-4 text-sm font-sans text-slate-500">
             Same fluent chain as the homepage performance section — just pointed at your
             visitor prefix.{' '}
-            <Link to="/#built-in" className="font-semibold text-emerald-400 hover:text-emerald-300">
+            <a
+              href={`${SITE_ORIGIN}/#built-in`}
+              className="font-semibold text-emerald-400 hover:text-emerald-300"
+            >
               See built-in I/O
-            </Link>
+            </a>
           </p>
         </div>
       </main>

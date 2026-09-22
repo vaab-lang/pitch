@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { RIFF_ORIGIN, TODO_ORIGIN } from '@/lib/app-mode'
 import { cn } from '@/lib/utils'
 
 const NAV = [
@@ -10,16 +11,25 @@ const NAV = [
   { href: '/#built-in', label: 'Built in', homeOnly: true },
   { href: '/#features', label: 'Features', homeOnly: true },
   { href: '/#performance', label: 'Performance', homeOnly: true },
-  { href: '/tasks', label: 'Todos', homeOnly: false },
+  { href: RIFF_ORIGIN, label: 'Riffs', homeOnly: false, external: true },
+  { href: TODO_ORIGIN, label: 'Todos', homeOnly: false, external: true },
   { href: '/spec', label: 'Spec', homeOnly: false },
   { href: '/decisions', label: 'Decisions', homeOnly: false },
   { href: '/changelog', label: 'Changelog', homeOnly: false },
   { href: '/#playground', label: 'Try it', homeOnly: true },
 ] as const
 
-function NavLink({ href, label }: { href: string; label: string }) {
+function NavLink({
+  href,
+  label,
+  external = false,
+}: {
+  href: string
+  label: string
+  external?: boolean
+}) {
   const location = useLocation()
-  const isRoute = href.startsWith('/') && !href.includes('#')
+  const isRoute = href.startsWith('/') && !href.includes('#') && !external
   const active = isRoute
     ? location.pathname === href
     : location.pathname === '/' && location.hash === href.replace('/', '')
@@ -38,7 +48,11 @@ function NavLink({ href, label }: { href: string; label: string }) {
   }
 
   return (
-    <a href={href} className={className}>
+    <a
+      href={href}
+      className={className}
+      {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+    >
       {label}
     </a>
   )
@@ -50,7 +64,7 @@ export function Header() {
     location.pathname === '/spec' ||
     location.pathname === '/decisions' ||
     location.pathname === '/changelog' ||
-    location.pathname === '/tasks'
+    false
 
   return (
     <nav className="fixed top-0 z-40 w-full border-b border-slate-800/70 bg-slate-950/90 py-4 backdrop-blur-md md:border-b-0 md:bg-transparent md:py-6">
@@ -67,7 +81,12 @@ export function Header() {
 
         <div className="hidden items-center gap-6 text-sm font-semibold md:flex lg:gap-8">
           {NAV.filter((item) => !onDocPage || !item.homeOnly).map((item) => (
-            <NavLink key={item.href} href={item.href} label={item.label} />
+            <NavLink
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              external={'external' in item ? item.external : false}
+            />
           ))}
         </div>
 

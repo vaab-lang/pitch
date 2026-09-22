@@ -1,6 +1,8 @@
 import { Code2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
+import { RIFF_ORIGIN, TODO_ORIGIN } from '@/lib/app-mode'
+
 export function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-black px-6 py-16">
@@ -20,6 +22,12 @@ export function Footer() {
             className="transition-colors hover:text-white"
           >
             GitHub
+          </a>
+          <a href={RIFF_ORIGIN} className="transition-colors hover:text-white">
+            Riff registry
+          </a>
+          <a href={TODO_ORIGIN} className="transition-colors hover:text-white">
+            Todo demo
           </a>
           <Link to="/spec" className="transition-colors hover:text-white">
             Language spec

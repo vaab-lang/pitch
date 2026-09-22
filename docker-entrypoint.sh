@@ -2,6 +2,7 @@
 set -eu
 
 PORT="${PORT:-8787}"
+APP="${APP:-site}"
 
 case "$PORT" in
   ''|*[!0-9]*)
@@ -10,8 +11,23 @@ case "$PORT" in
     ;;
 esac
 
-# Rewrite the listen port in main.vaab so Render/Fly env PORT works.
-sed -i "s/serve on port [0-9][0-9]*/serve on port ${PORT}/" /home/site/app/main.vaab
+case "$APP" in
+  site)
+    MAIN="/home/site/app/main.vaab"
+    ;;
+  todo)
+    MAIN="/home/site/app/main-todo.vaab"
+    ;;
+  riff)
+    MAIN="/home/site/app/main-riff.vaab"
+    ;;
+  *)
+    echo "site: APP must be site, todo, or riff (got: $APP)" >&2
+    exit 1
+    ;;
+esac
 
-echo "site: listening on port ${PORT}"
-exec vaab serve /home/site/app/main.vaab
+sed -i "s/serve on port [0-9][0-9]*/serve on port ${PORT}/" "$MAIN"
+
+echo "site: app=${APP} listening on port ${PORT}"
+exec vaab serve "$MAIN"

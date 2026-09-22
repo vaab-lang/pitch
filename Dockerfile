@@ -34,7 +34,7 @@ WORKDIR /home/site/app
 ENV HOME=/home/site \
     PORT=8787
 
-COPY --chown=site:site main.vaab riff ./
+COPY --chown=site:site main.vaab main-todo.vaab main-riff.vaab riff ./
 COPY --from=web --chown=site:site /src/web/dist ./web/dist
 COPY --chown=site:site docker-entrypoint.sh /home/site/docker-entrypoint.sh
 RUN chmod +x /home/site/docker-entrypoint.sh

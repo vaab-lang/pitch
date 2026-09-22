@@ -1,6 +1,11 @@
-# Free-tier Docker deploy on Render (spins down after ~15 min idle).
+# Free-tier Docker deploys on Render (spins down after ~15 min idle).
 # Dashboard: New → Blueprint → this repo, or connect and apply this file.
 # https://render.com/docs/blueprint-spec
+#
+# Custom domains:
+#   site → vaab.dev
+#   todo → todo.vaab.dev
+#   riff → riff.vaab.dev
 
 services:
   - type: web
@@ -10,3 +15,28 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /health
+    envVars:
+      - key: APP
+        value: site
+
+  - type: web
+    name: todo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: APP
+        value: todo
+
+  - type: web
+    name: riff
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: APP
+        value: riff
