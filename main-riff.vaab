@@ -54,10 +54,6 @@ track_prefix(name: Text) returns Text {
 seed_downloads(name: Text) returns Int {
     if name == "supabase" { return 1842 }
     if name == "tape" { return 956 }
-    if name == "json" { return 621 }
-    if name == "sqlite" { return 488 }
-    if name == "jwt" { return 312 }
-    if name == "redis" { return 204 }
     return 0
 }
 
@@ -99,17 +95,9 @@ track_download(name: Text) returns Tracked or fails ApiError {
 list_stats() returns [RiffStat] or fails ApiError {
     let supabase = try read_downloads("supabase")
     let tape = try read_downloads("tape")
-    let json = try read_downloads("json")
-    let sqlite = try read_downloads("sqlite")
-    let jwt = try read_downloads("jwt")
-    let redis = try read_downloads("redis")
     return [
         RiffStat.new(name: "supabase", downloads: supabase),
         RiffStat.new(name: "tape", downloads: tape),
-        RiffStat.new(name: "json", downloads: json),
-        RiffStat.new(name: "sqlite", downloads: sqlite),
-        RiffStat.new(name: "jwt", downloads: jwt),
-        RiffStat.new(name: "redis", downloads: redis),
     ]
 }
 
