@@ -10,6 +10,7 @@ Requires a local [Vaab](https://github.com/vaab-lang/vaab) build with static-fil
 
 ```sh
 cd web && npm install && npm run build && cd ..
+riff install tape
 vaab serve main.vaab
 # → http://127.0.0.1:8787
 ```
@@ -25,36 +26,41 @@ cargo run --bin vaab -- serve /path/to/vaab-site/main.vaab
 | Path | Purpose |
 |------|---------|
 | `main.vaab` | Unified server — static files + health check |
-| `riffs/tape/` | Static file riff: `for_path`, `mime_for` |
 | `web/` | React + Vite landing page with CodeMirror playground |
+
+Static files are served through the **[tape](https://github.com/vaab-lang/vaab-riffs/tree/main/tape)** riff (`riff install tape`).
 
 ## Architecture
 
 ```
 Browser
    │
-   ├─ GET /*          → reply file (served from tape)
+   ├─ GET /*          → tape.resolve → reply file
    ├─ GET /health     → Vaab JSON route
    └─ POST /api/run   → vaab-server playground (embedded VM)
 ```
 
 ## tape riff
 
-**tape** is a Vaab riff for serving static files — paths and mime types, plain English:
+**tape** is the official static-file riff (formerly the local express/deck helper). It lives in [vaab-riffs](https://github.com/vaab-lang/vaab-riffs):
 
 - `tape.for_path(root, requested)` — resolve a safe path under a static root
+- `tape.resolve(root, requested)` — same, with `StaticError` for route matching
 - `tape.mime_for(path)` — guess a content type from a file extension
 
-```
-need tape from ./riffs/tape
+```vaab
+need tape
 ```
 
 ## Development
 
 ```sh
 cd web && npm run build && cd ..
+riff install tape
 vaab serve main.vaab
 ```
+
+For local riff work, install from a checkout: `riff install tape` after copying into `~/.vaab/riffs`, or use `need tape from "../vaab-riffs/tape"` temporarily.
 
 ## License
 

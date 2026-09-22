@@ -1,12 +1,12 @@
 # pitch — the Vaab landing page, playground, and static assets in one server.
 #
 #   cd web && npm run build
+#   riff install tape
 #   vaab serve main.vaab
 #
 # POST /api/run is handled natively by vaab-server (embedded VM playground).
-# Static paths follow the same rules as tape.for_path.
 
-need tape from ./riffs/tape
+need tape
 
 type Health can Json {
     ok: Bool
@@ -27,12 +27,18 @@ serve on port 8787 {
     }
 
     route get "/{*filepath}" {
-        if filepath.contains("..") {
-            reply text "forbidden" as "text/plain; charset=utf-8" status 403
+        match tape.resolve("web/dist", filepath) {
+            when success resolved then {
+                reply file resolved
+            }
+            when failure error then match error {
+                when Unsafe(requested) then {
+                    reply text "forbidden" as "text/plain; charset=utf-8" status 403
+                }
+                when NotFound(requested) then {
+                    reply text "not found" as "text/plain; charset=utf-8" status 404
+                }
+            }
         }
-
-        let name = if filepath.is_empty { "index.html" } else { filepath }
-        let target = "web/dist/{name}"
-        reply file target
     }
 }
