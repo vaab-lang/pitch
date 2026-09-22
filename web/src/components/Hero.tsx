@@ -1,45 +1,10 @@
-import { ArrowDown, Sparkles } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 
+import { VaabCode } from '@/components/VaabCode'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
-export function Hero() {
-  return (
-    <section className="hero-glow relative overflow-hidden pb-16 pt-20 sm:pb-24 sm:pt-28">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="max-w-3xl">
-          <Badge variant="accent" className="mb-6">
-            <Sparkles className="h-3 w-3" />
-            Strictly typed · Plain English
-          </Badge>
-
-          <h1 className="font-serif text-5xl leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-            Code that reads like you{' '}
-            <em className="text-gradient not-italic">meant it</em>.
-          </h1>
-
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            Vaab is a programming language that prefers words to symbols, checks
-            every signature at compile time, and makes data races a type error —
-            not a Friday-night surprise.
-          </p>
-
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Button size="lg" asChild>
-              <a href="#playground">Try Vaab in the browser</a>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <a href="#install">Install locally</a>
-            </Button>
-          </div>
-        </div>
-
-        <div className="blueprint-corner mt-16 max-w-2xl rounded-lg border border-border bg-card/80 p-6 backdrop-blur-sm">
-          <p className="mb-3 font-mono text-xs uppercase tracking-widest text-primary">
-            A taste of Vaab
-          </p>
-          <pre className="overflow-x-auto font-mono text-sm leading-relaxed text-foreground/90">
-            <code>{`type Account {
+const SAMPLE_CODE = `type Account {
     owner: Text
     balance: Int = 0
 }
@@ -47,18 +12,55 @@ export function Hero() {
 match account.deposit(25) {
     when success a then print("{a.owner} has {a.balance}")
     when failure _   then print("that did not work")
-}`}</code>
-          </pre>
+}`
+
+export function Hero() {
+  return (
+    <section className="relative overflow-hidden px-4 pb-24 pt-36 sm:px-6 md:pb-40 md:pt-48">
+      <div className="pointer-events-none absolute right-0 top-0 h-[800px] w-[800px] -translate-y-1/2 translate-x-1/3 rounded-full bg-emerald-500/10 blur-[120px]" />
+      <div className="pointer-events-none absolute left-0 top-0 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/4 rounded-full bg-indigo-500/10 blur-[100px]" />
+
+      <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
+        <div>
+          <Badge variant="default" className="mb-8">
+            <Sparkles className="h-3 w-3" fill="currentColor" />
+            Strictly typed · Plain English
+          </Badge>
+
+          <h1 className="mb-8 text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-50 sm:text-5xl md:text-7xl">
+            Code that reads like you{' '}
+            <span className="text-gradient">meant it</span>.
+          </h1>
+
+          <p className="mb-10 max-w-lg text-lg font-medium leading-relaxed text-slate-400 md:text-xl">
+            Vaab is a programming language that prefers words to symbols, checks
+            every signature at compile time, and makes data races a type error,
+            not a Friday-night surprise.
+          </p>
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+            <Button size="lg" asChild>
+              <a href="#playground" className="group">
+                Try Vaab in the browser
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </a>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <a href="#install">Install locally</a>
+            </Button>
+          </div>
+
+          <p className="mt-8 text-sm font-medium text-slate-500">
+            Open source · MIT licensed · Built for readable backends
+          </p>
         </div>
 
-        <a
-          href="#features"
-          className="mt-16 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
-          aria-label="Scroll to features"
-        >
-          <ArrowDown className="h-4 w-4 animate-bounce" />
-          See what makes Vaab different
-        </a>
+        <div className="relative flex items-center lg:h-[520px]">
+          <div className="relative z-10 w-full rotate-1 transition-transform duration-700 ease-out hover:rotate-0">
+            <VaabCode code={SAMPLE_CODE} filename="account.vaab" minHeight="320px" />
+          </div>
+          <div className="absolute -right-10 -top-10 -z-10 h-full w-full -rotate-3 rounded-[3rem] border border-emerald-500/20 bg-gradient-to-br from-emerald-950/80 to-teal-950/80" />
+        </div>
       </div>
     </section>
   )

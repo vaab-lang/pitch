@@ -1,30 +1,29 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --color-background: oklch(0.16 0.012 165);
-  --color-foreground: oklch(0.94 0.012 165);
-  --color-card: oklch(0.19 0.014 165);
-  --color-card-foreground: oklch(0.94 0.012 165);
-  --color-primary: oklch(0.78 0.14 175);
-  --color-primary-foreground: oklch(0.16 0.02 175);
-  --color-secondary: oklch(0.24 0.018 165);
-  --color-secondary-foreground: oklch(0.88 0.02 165);
-  --color-muted: oklch(0.22 0.014 165);
-  --color-muted-foreground: oklch(0.68 0.02 165);
-  --color-accent: oklch(0.82 0.16 85);
-  --color-accent-foreground: oklch(0.18 0.03 85);
-  --color-destructive: oklch(0.62 0.2 25);
-  --color-border: oklch(0.28 0.02 165);
-  --color-input: oklch(0.24 0.018 165);
-  --color-ring: oklch(0.78 0.14 175);
+  --color-background: #020617;
+  --color-foreground: #f1f5f9;
+  --color-card: #0f172a;
+  --color-card-foreground: #f1f5f9;
+  --color-primary: #10b981;
+  --color-primary-foreground: #020617;
+  --color-secondary: #1e293b;
+  --color-secondary-foreground: #e2e8f0;
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
+  --color-accent: #34d399;
+  --color-accent-foreground: #020617;
+  --color-destructive: #f87171;
+  --color-border: #1e293b;
+  --color-input: #1e293b;
+  --color-ring: #10b981;
 
-  --radius: 0.5rem;
-  --radius-sm: calc(var(--radius) * 0.75);
-  --radius-lg: calc(var(--radius) * 1.25);
+  --radius: 1rem;
+  --radius-sm: 0.5rem;
+  --radius-lg: 2rem;
 }
 
 @layer base {
@@ -38,72 +37,170 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    background-image:
-      linear-gradient(oklch(0.28 0.02 165 / 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, oklch(0.28 0.02 165 / 0.35) 1px, transparent 1px);
-    background-size: 48px 48px;
-    background-position: -1px -1px;
   }
 
   ::selection {
-    background: oklch(0.78 0.14 175 / 0.35);
-    color: oklch(0.98 0.01 175);
+    background: rgba(16, 185, 129, 0.35);
+    color: #ecfdf5;
   }
 }
 
 @layer utilities {
-  .font-serif {
-    font-family: var(--font-serif);
-  }
-
   .font-mono {
     font-family: var(--font-mono);
   }
 
-  .blueprint-corner {
-    position: relative;
-  }
-
-  .blueprint-corner::before,
-  .blueprint-corner::after {
-    content: "";
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border-color: oklch(0.78 0.14 175 / 0.5);
-    pointer-events: none;
-  }
-
-  .blueprint-corner::before {
-    top: -1px;
-    left: -1px;
-    border-top: 1px solid;
-    border-left: 1px solid;
-  }
-
-  .blueprint-corner::after {
-    bottom: -1px;
-    right: -1px;
-    border-bottom: 1px solid;
-    border-right: 1px solid;
-  }
-
   .text-gradient {
-    background: linear-gradient(
-      135deg,
-      oklch(0.88 0.12 175) 0%,
-      oklch(0.82 0.16 85) 100%
-    );
+    background: linear-gradient(to right, #34d399, #2dd4bf);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 
-  .hero-glow {
-    background: radial-gradient(
-      ellipse 60% 50% at 50% -10%,
-      oklch(0.78 0.14 175 / 0.18),
-      transparent 70%
-    );
+  @keyframes icon-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-2px);
+    }
+  }
+
+  .icon-float {
+    animation: icon-float 3s ease-in-out infinite;
+  }
+
+  @keyframes readable-glow {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes readable-scan {
+    0% {
+      transform: translateY(0);
+      opacity: 0.8;
+    }
+    100% {
+      transform: translateY(108px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes readable-caret {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes readable-check {
+    from {
+      stroke-dashoffset: 28;
+      opacity: 0;
+    }
+    to {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+  }
+
+  @keyframes readable-ring {
+    0%,
+    100% {
+      stroke-opacity: 0.35;
+    }
+    50% {
+      stroke-opacity: 0.9;
+    }
+  }
+
+  @keyframes readable-draw {
+    from {
+      stroke-dashoffset: 40;
+      opacity: 0.2;
+    }
+    to {
+      stroke-dashoffset: 0;
+      opacity: 1;
+    }
+  }
+
+  @keyframes readable-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .readable-glow {
+    animation: readable-glow 2.6s ease-in-out infinite;
+  }
+
+  .readable-scan {
+    transform-box: fill-box;
+    transform-origin: top center;
+    animation: readable-scan 2.8s ease-in-out infinite;
+  }
+
+  .readable-caret {
+    animation: readable-caret 1.1s ease-in-out infinite;
+  }
+
+  .readable-check {
+    stroke-dasharray: 28;
+    animation: readable-check 0.9s ease-out 1.2s both;
+  }
+
+  .readable-ring {
+    animation: readable-ring 2.8s ease-in-out infinite;
+  }
+
+  .readable-draw {
+    stroke-dasharray: 40;
+    animation: readable-draw 1s ease-out both;
+  }
+
+  .readable-fade-up {
+    animation: readable-fade-up 0.7s ease-out both;
+  }
+
+  .readable-delay-1 {
+    animation-delay: 0.2s;
+  }
+
+  .readable-delay-2 {
+    animation-delay: 0.4s;
+  }
+
+  .readable-delay-3 {
+    animation-delay: 0.6s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .readable-glow,
+    .readable-scan,
+    .readable-caret,
+    .readable-check,
+    .readable-ring,
+    .readable-draw,
+    .readable-fade-up {
+      animation: none;
+      opacity: 1;
+      stroke-dashoffset: 0;
+      transform: none;
+    }
   }
 }

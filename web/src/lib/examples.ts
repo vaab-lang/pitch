@@ -49,13 +49,17 @@ match Account.new(owner: "Ada").deposit(25) {
     id: 'match',
     label: 'Match',
     description: 'Pattern matching on choices',
-    source: `choice Mood { Bright, Cloudy, Stormy }
+    source: `choice Mood {
+    Bright
+    Cloudy
+    Stormy
+}
 
 to describe(m: Mood) returns Text {
     match m {
-        when Bright  then return "sun on your face"
-        when Cloudy  then return "soft light through glass"
-        when Stormy  then return "rain on the roof"
+        when Bright then "sun on your face"
+        when Cloudy then "soft light through glass"
+        when Stormy then "rain on the roof"
     }
 }
 
