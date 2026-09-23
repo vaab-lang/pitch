@@ -7,8 +7,6 @@ import { RIFF_ORIGIN, TODO_ORIGIN } from '@/lib/app-mode'
 import { cn } from '@/lib/utils'
 
 const NAV = [
-  { href: '/#vibe-coding', label: 'Vibe coding', homeOnly: true },
-  { href: '/#built-in', label: 'Built in', homeOnly: true },
   { href: '/#features', label: 'Features', homeOnly: true },
   { href: '/#performance', label: 'Performance', homeOnly: true },
   { href: RIFF_ORIGIN, label: 'Riffs', homeOnly: false, external: true },
@@ -16,7 +14,6 @@ const NAV = [
   { href: '/spec', label: 'Spec', homeOnly: false },
   { href: '/decisions', label: 'Decisions', homeOnly: false },
   { href: '/changelog', label: 'Changelog', homeOnly: false },
-  { href: '/#playground', label: 'Try it', homeOnly: true },
 ] as const
 
 function NavLink({
