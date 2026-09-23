@@ -18,7 +18,7 @@ export type BackendBenchmark = {
   rows: BenchmarkRow[]
 }
 
-/** 5-run averages on Apple Silicon · vaab 0.1 release · Node 22 · Sep 2026 */
+/** 5-run averages on Apple Silicon · vaab 0.1.3 · Node 24 · Sep 2026 */
 export const BACKEND_BENCHMARKS: BackendBenchmark[] = [
   {
     id: 'json',
@@ -30,13 +30,13 @@ export const BACKEND_BENCHMARKS: BackendBenchmark[] = [
     unit: 'ms',
     vaabFilename: 'users.vaab',
     nodeFilename: 'users.ts',
-    vaabCode: `type User can Json {
+    vaabCode: `type User {
     id: Int
     name: Text
     active: Bool
 }
 
-to users_json() {
+users_json() {
     let changing i = 0
     while i < 1000 {
         let user = User.new(id: i, name: "user", active: yes)
@@ -56,8 +56,8 @@ to users_json() {
   return out;
 }`,
     rows: [
-      { language: 'Vaab', ms: 3.9, color: '#10b981' },
-      { language: 'Node.js', ms: 54.9, color: '#84cc16' },
+      { language: 'Vaab', ms: 5.5, color: '#10b981' },
+      { language: 'Node.js', ms: 58.9, color: '#84cc16' },
     ],
   },
   {
@@ -70,9 +70,7 @@ to users_json() {
     unit: 'ms',
     vaabFilename: 'sessions.vaab',
     nodeFilename: 'sessions.ts',
-    vaabCode: `choice StoreError { Failed(message: Text) }
-
-to remember(store: Store, key: Text, value: Text) returns Int or fails StoreError {
+    vaabCode: `remember(store: Store, key: Text, value: Text) returns Int or fails StoreError {
     let count = try store.from("session:").insert({
         "key": key,
         "value": value,
@@ -80,8 +78,8 @@ to remember(store: Store, key: Text, value: Text) returns Int or fails StoreErro
     return success count
 }
 
-to lookup(store: Store, key: Text) returns Text or fails StoreError {
-    let row = try store.from("session:").where_eq("key", key).first()
+lookup(store: Store, key: Text) returns Text or fails StoreError {
+    let row = try store.from("session:").where("key").is(key).first()
     match row {
         when found session then {
             let value = session.get("value") otherwise "absent"
@@ -115,8 +113,8 @@ export function lookup(key: string): string {
   return get.get(key)?.v ?? "absent";
 }`,
     rows: [
-      { language: 'Vaab', ms: 88.0, color: '#10b981' },
-      { language: 'Node.js', ms: 116.2, color: '#84cc16' },
+      { language: 'Vaab', ms: 75.3, color: '#10b981' },
+      { language: 'Node.js', ms: 122.6, color: '#84cc16' },
     ],
   },
   {
@@ -129,9 +127,7 @@ export function lookup(key: string): string {
     unit: 'ms',
     vaabFilename: 'users.vaab',
     nodeFilename: 'users.ts',
-    vaabCode: `choice DbError { Failed(message: Text) }
-
-to create_user(db: Db, id: Text, email: Text) returns Int or fails DbError {
+    vaabCode: `create_user(db: Db, id: Text, email: Text) returns Int or fails DbError {
     let count = try db.from("users").insert({
         "id": id,
         "email": email,
@@ -139,8 +135,8 @@ to create_user(db: Db, id: Text, email: Text) returns Int or fails DbError {
     return success count
 }
 
-to find_user(db: Db, id: Text) returns map of Text to Text or fails DbError {
-    let row = try db.from("users").where_eq("id", id).first()
+find_user(db: Db, id: Text) returns map of Text to Text or fails DbError {
+    let row = try db.from("users").where("id").is(id).first()
     match row {
         when found user then { return success user }
         when nothing then {
@@ -163,8 +159,8 @@ export function findUser(id: string): UserRow | undefined {
   return select.get(String(id)) as UserRow | undefined;
 }`,
     rows: [
-      { language: 'Vaab', ms: 36.9, color: '#10b981' },
-      { language: 'Node.js', ms: 91.5, color: '#84cc16' },
+      { language: 'Vaab', ms: 35.6, color: '#10b981' },
+      { language: 'Node.js', ms: 89.3, color: '#84cc16' },
     ],
   },
   {
@@ -177,9 +173,7 @@ export function findUser(id: string): UserRow | undefined {
     unit: 'ms',
     vaabFilename: 'notify.vaab',
     nodeFilename: 'notify.ts',
-    vaabCode: `choice HttpError { Failed(message: Text) }
-
-to ping_service(url: Text) returns Text or fails HttpError {
+    vaabCode: `ping_service(url: Text) returns Text or fails HttpError {
     let body = try http.get(url)
     return success body
 }`,
@@ -191,8 +185,8 @@ to ping_service(url: Text) returns Text or fails HttpError {
   return response.text();
 }`,
     rows: [
-      { language: 'Vaab', ms: 12.0, color: '#10b981' },
-      { language: 'Node.js', ms: 106.3, color: '#84cc16' },
+      { language: 'Vaab', ms: 11.7, color: '#10b981' },
+      { language: 'Node.js', ms: 104.2, color: '#84cc16' },
     ],
   },
   {
@@ -205,14 +199,12 @@ to ping_service(url: Text) returns Text or fails HttpError {
     unit: 'ms',
     vaabFilename: 'handler.vaab',
     nodeFilename: 'handler.ts',
-    vaabCode: `choice StoreError { Failed(message: Text) }
-
-type Session can Json {
+    vaabCode: `type Session {
     user: Text
     role: Text
 }
 
-to session_json(store: Store, user: Text) returns Text or fails StoreError {
+session_json(store: Store, user: Text) returns Text or fails StoreError {
     match store.get("session:{user}") {
         when found role then {
             return success to_json(Session.new(user: user, role: role))
@@ -249,11 +241,11 @@ export function sessionJson(
   return JSON.stringify(session);
 }`,
     rows: [
-      { language: 'Vaab', ms: 31.7, color: '#10b981' },
-      { language: 'Node.js', ms: 65.5, color: '#84cc16' },
+      { language: 'Vaab', ms: 32.4, color: '#10b981' },
+      { language: 'Node.js', ms: 67.6, color: '#84cc16' },
     ],
   },
 ]
 
 export const BENCHMARK_FOOTNOTE =
-  'Measured locally · 5-run average · vaab 0.1 release vs Node 22 (TypeScript) · Sep 2026. Node cache/handler benchmarks use node:sqlite; Vaab uses built-in Store and Db with fluent query chains. Store keeps hot keys in memory and batches durable writes (32 keys per commit).'
+  'Measured locally · 5-run average · vaab 0.1.3 vs Node 24 (TypeScript) · Sep 2026. Node cache/handler benchmarks use node:sqlite; Vaab uses built-in Store and Db with fluent query chains. Store keeps hot keys in memory and batches durable writes (32 keys per commit).'

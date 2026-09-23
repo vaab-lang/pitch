@@ -1,10 +1,10 @@
-type User can Json {
+type User {
     id: Int
     name: Text
     active: Bool
 }
 
-to users_json() {
+users_json() {
     let changing i = 0
     while i < 1000 {
         let user = User.new(id: i, name: "user", active: yes)

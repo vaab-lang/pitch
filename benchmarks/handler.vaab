@@ -1,11 +1,9 @@
-choice StoreError { Failed(message: Text) }
-
-type Session can Json {
+type Session {
     user: Text
     role: Text
 }
 
-to session_json(store: Store, user: Text) returns Text or fails StoreError {
+session_json(store: Store, user: Text) returns Text or fails StoreError {
     match store.get("session:{user}") {
         when found role then {
             return success to_json(Session.new(user: user, role: role))
@@ -17,7 +15,7 @@ to session_json(store: Store, user: Text) returns Text or fails StoreError {
     }
 }
 
-to bench() returns Int or fails StoreError {
+bench() returns Int or fails StoreError {
     let store = try Store.open("benchmarks/.data/bench.kv")
     let changing i = 0
     while i < 200 {

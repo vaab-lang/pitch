@@ -1,6 +1,4 @@
-choice DbError { Failed(message: Text) }
-
-to create_user(db: Db, id: Text, email: Text) returns Int or fails DbError {
+create_user(db: Db, id: Text, email: Text) returns Int or fails DbError {
     let count = try db.from("users").insert({
         "id": id,
         "email": email,
@@ -8,8 +6,8 @@ to create_user(db: Db, id: Text, email: Text) returns Int or fails DbError {
     return success count
 }
 
-to find_user(db: Db, id: Text) returns map of Text to Text or fails DbError {
-    let row = try db.from("users").where_eq("id", id).first()
+find_user(db: Db, id: Text) returns map of Text to Text or fails DbError {
+    let row = try db.from("users").where("id").is(id).first()
     match row {
         when found user then { return success user }
         when nothing then {
@@ -18,9 +16,9 @@ to find_user(db: Db, id: Text) returns map of Text to Text or fails DbError {
     }
 }
 
-to bench() returns Int or fails DbError {
+bench() returns Int or fails DbError {
     let db = try Db.connect("sqlite:benchmarks/.data/app.db")
-    let empty: list of Text = []
+    let empty: [Text] = []
     try db.execute(
         "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL)",
         empty,

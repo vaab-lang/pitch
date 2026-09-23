@@ -2,10 +2,9 @@
 # Dashboard: New → Blueprint → this repo, or connect and apply this file.
 # https://render.com/docs/blueprint-spec
 #
-# Custom domains:
-#   site → vaab.dev
-#   todo → todo.vaab.dev
-#   riff → riff.vaab.dev
+# Two services, two custom domains (Render custom-domain limit):
+#   site → vaab.dev (landing, playground, todo demo at /tasks)
+#   riff → riff.vaab.dev (package registry)
 
 services:
   - type: web
@@ -18,17 +17,6 @@ services:
     envVars:
       - key: APP
         value: site
-
-  - type: web
-    name: todo
-    runtime: docker
-    plan: free
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    healthCheckPath: /health
-    envVars:
-      - key: APP
-        value: todo
 
   - type: web
     name: riff

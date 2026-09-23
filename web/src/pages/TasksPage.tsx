@@ -2,7 +2,6 @@ import { Check, Loader2, Plus, Trash2, Zap } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Footer } from '@/components/Footer'
 import { TodoHeader } from '@/components/TodoHeader'
-import { SITE_ORIGIN } from '@/lib/app-mode'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -284,7 +283,7 @@ let rows = try store
             Same fluent chain as the homepage performance section — just pointed at your
             visitor prefix.{' '}
             <a
-              href={`${SITE_ORIGIN}/#built-in`}
+              href="/#built-in"
               className="font-semibold text-emerald-400 hover:text-emerald-300"
             >
               See built-in I/O

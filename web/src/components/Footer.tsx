@@ -1,7 +1,7 @@
 import { Code2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-import { RIFF_ORIGIN, TODO_ORIGIN } from '@/lib/app-mode'
+import { RIFF_ORIGIN } from '@/lib/app-mode'
 
 export function Footer() {
   return (
@@ -26,9 +26,9 @@ export function Footer() {
           <a href={RIFF_ORIGIN} className="transition-colors hover:text-white">
             Riff registry
           </a>
-          <a href={TODO_ORIGIN} className="transition-colors hover:text-white">
+          <Link to="/tasks" className="transition-colors hover:text-white">
             Todo demo
-          </a>
+          </Link>
           <Link to="/spec" className="transition-colors hover:text-white">
             Language spec
           </Link>

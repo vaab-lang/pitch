@@ -3,14 +3,14 @@ import { Link, useLocation } from 'react-router-dom'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { RIFF_ORIGIN, TODO_ORIGIN } from '@/lib/app-mode'
+import { RIFF_ORIGIN, TODO_PATH } from '@/lib/app-mode'
 import { cn } from '@/lib/utils'
 
 const NAV = [
   { href: '/#features', label: 'Features', homeOnly: true },
   { href: '/#performance', label: 'Performance', homeOnly: true },
   { href: RIFF_ORIGIN, label: 'Riffs', homeOnly: false, external: true },
-  { href: TODO_ORIGIN, label: 'Todos', homeOnly: false, external: true },
+  { href: TODO_PATH, label: 'Todos', homeOnly: false },
   { href: '/spec', label: 'Spec', homeOnly: false },
   { href: '/decisions', label: 'Decisions', homeOnly: false },
   { href: '/changelog', label: 'Changelog', homeOnly: false },

@@ -1,6 +1,4 @@
-choice StoreError { Failed(message: Text) }
-
-to remember(store: Store, key: Text, value: Text) returns Int or fails StoreError {
+remember(store: Store, key: Text, value: Text) returns Int or fails StoreError {
     let count = try store.from("session:").insert({
         "key": key,
         "value": value,
@@ -8,8 +6,8 @@ to remember(store: Store, key: Text, value: Text) returns Int or fails StoreErro
     return success count
 }
 
-to lookup(store: Store, key: Text) returns Text or fails StoreError {
-    let row = try store.from("session:").where_eq("key", key).first()
+lookup(store: Store, key: Text) returns Text or fails StoreError {
+    let row = try store.from("session:").where("key").is(key).first()
     match row {
         when found session then {
             let value = session.get("value") otherwise "absent"
@@ -19,7 +17,7 @@ to lookup(store: Store, key: Text) returns Text or fails StoreError {
     }
 }
 
-to bench() returns Int or fails StoreError {
+bench() returns Int or fails StoreError {
     let store = try Store.open("benchmarks/.data/bench.kv")
     let changing i = 0
     while i < 200 {

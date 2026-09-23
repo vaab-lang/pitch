@@ -15,14 +15,11 @@ case "$APP" in
   site)
     MAIN="/home/site/app/main.vaab"
     ;;
-  todo)
-    MAIN="/home/site/app/main-todo.vaab"
-    ;;
   riff)
     MAIN="/home/site/app/main-riff.vaab"
     ;;
   *)
-    echo "site: APP must be site, todo, or riff (got: $APP)" >&2
+    echo "site: APP must be site or riff (got: $APP)" >&2
     exit 1
     ;;
 esac

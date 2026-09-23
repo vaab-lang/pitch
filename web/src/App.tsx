@@ -28,6 +28,7 @@ function SiteRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/tasks" element={<TasksPage />} />
       <Route path="/spec" element={<SpecPage />} />
       <Route path="/decisions" element={<DecisionsPage />} />
       <Route path="/changelog" element={<ChangelogPage />} />
